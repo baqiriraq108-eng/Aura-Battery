@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AuraBattery</string>
+    <string name="empty"></string>
+    <string name="attribution_label">Battery Telemetry Monitoring</string>
+</resources>

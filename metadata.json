@@ -1,0 +1,6 @@
+{
+  "name": "AuraBattery",
+  "description": "An elegant battery monitor application utilizing a highly-optimized adaptive icon to prevent visual stuttering, scale-popping, or shape distortion during launcher animations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
