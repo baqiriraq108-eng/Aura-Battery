@@ -64,38 +64,3 @@ fun Modifier.expressiveBounceClickable(
             onClick()
         }
 }
-
-/**
- * Attachable bounce modifier for components managing their own interactions
- */
-fun Modifier.expressiveBounce(
-    interactionSource: MutableInteractionSource,
-    enabled: Boolean = true,
-    pressedScale: Float = 0.94f
-): Modifier = composed {
-    val isPressed by interactionSource.collectIsPressedAsState()
-
-    val animatedScale by animateFloatAsState(
-        targetValue = if (isPressed && enabled) pressedScale else 1.0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "ExpressiveBounceScalePassive"
-    )
-
-    val depthTranslation by animateDpAsState(
-        targetValue = if (isPressed && enabled) 2.dp else 0.dp,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMediumLow
-        ),
-        label = "ExpressiveBounceDepthPassive"
-    )
-
-    this.graphicsLayer {
-        scaleX = animatedScale
-        scaleY = animatedScale
-        translationY = depthTranslation.toPx()
-    }
-}

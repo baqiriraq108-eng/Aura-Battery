@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Theme.MyApplication" parent="android:Theme.DeviceDefault.NoActionBar">
-        <item name="android:windowBackground">@color/olive_background_dark</item>
-        <item name="android:colorBackground">@color/olive_background_dark</item>
-        <item name="android:statusBarColor">@color/olive_background_dark</item>
-        <item name="android:navigationBarColor">@color/olive_background_dark</item>
+        <item name="android:windowBackground">@color/parchment_background_light</item>
+        <item name="android:colorBackground">@color/parchment_background_light</item>
+        <item name="android:statusBarColor">#2B4C3E</item>
+        <item name="android:navigationBarColor">@color/parchment_background_light</item>
+        <!-- Disable Android 12+ Splash Screen icon flash & white glow on cold start -->
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/parchment_background_light</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@color/transparent_splash</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@color/transparent_splash</item>
+        <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="31">0</item>
     </style>
 </resources>
-

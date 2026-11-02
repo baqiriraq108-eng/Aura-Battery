@@ -17,6 +17,9 @@ interface BatteryLogDao {
     @Query("SELECT * FROM battery_logs ORDER BY timestamp ASC")
     fun getAllLogsFlow(): Flow<List<BatteryLogEntry>>
 
+    @Query("SELECT * FROM battery_logs ORDER BY timestamp ASC")
+    suspend fun getAllLogsSnapshot(): List<BatteryLogEntry>
+
     @Query("DELETE FROM battery_logs WHERE timestamp < :cutoffTime")
     suspend fun pruneLogs(cutoffTime: Long)
 

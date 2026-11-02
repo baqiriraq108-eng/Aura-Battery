@@ -6,16 +6,22 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.BATTERY_STATS" tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <attribution android:tag="@string/empty" android:label="@string/attribution_label" />
+
+    <queries>
+        <package android:name="com.android.thememanager" />
+        <package android:name="com.miui.securitycenter" />
+        <intent>
+            <action android:name="miui.intent.action.RINGTONE_PICKER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.RINGTONE_PICKER" />
+        </intent>
+    </queries>
 
     <application
         android:allowBackup="true"
@@ -42,7 +48,7 @@
             android:name=".BatteryTelemetryService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="specialUse|mediaPlayback">
+            android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Telemetry service monitoring charge cycles and battery safety limits to prevent battery swelling." />

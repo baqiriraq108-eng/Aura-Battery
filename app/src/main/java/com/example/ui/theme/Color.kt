@@ -3,312 +3,405 @@ package com.example.ui.theme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+
+/**
+ * Core 3D Clay colors and diversified non-repeating tile/hill palette.
+ * Ensures green appears at most twice on any screen (Header Wave + 1 Mint Hill),
+ * while metric cards and hills showcase Slate-Indigo, Terracotta, Berry Rust,
+ * Mustard Ochre, Warm Plum, Coral, and Warm Sand clay tones.
+ */
+object AuraTactileColors {
+    // Light & Dark Mode Default Header & Parchment Colors
+    val ForestHeaderLight = Color(0xFF2B4C3E)
+    val ForestHeaderDark = Color(0xFF1B3328)
+
+    val ParchmentBgLight = Color(0xFFF6F2E6)
+    val ParchmentBgDark = Color(0xFF131C18)
+
+    val SandMedallionLight = Color(0xFFE5DEC9)
+    val SandMedallionLipLight = Color(0xFFCBC2A8)
+    val SandMedallionDark = Color(0xFF25322C)
+    val SandMedallionLipDark = Color(0xFF161F1B)
+
+    // Diversified 3D Clay Metric Tiles (Synchronized between Dashboard & Settings)
+    val TileSlateFace = Color(0xFF3D5266)
+    val TileSlateLip = Color(0xFF253442)
+
+    // Calibrated Sage-Emerald Green for Battery Health (matches saturation & lightness weight of Slate, Rust & Mustard)
+    val TileHealthGreenFace = Color(0xFF3B7A57)
+    val TileHealthGreenLip = Color(0xFF234D36)
+
+    val TileTerracottaFace = Color(0xFFC86441)
+    val TileTerracottaLip = Color(0xFF873D23)
+
+    val TileRustFace = Color(0xFFA84A31)
+    val TileRustLip = Color(0xFF6E2B19)
+
+    val TileMustardFace = Color(0xFFD8AC2C)
+    val TileMustardLip = Color(0xFF967314)
+
+    val TilePlumFace = Color(0xFF7D4B6D)
+    val TilePlumLip = Color(0xFF4F2C44)
+
+    val TileSandFace = Color(0xFFE4DEC9)
+    val TileSandLip = Color(0xFFBFB69C)
+
+    // 25h Activity Ribbon & Diversified Clay Hills (Only 1 Green Hill!)
+    val RibbonTopFace = Color(0xFFC45A37)
+    val RibbonHighlight = Color(0xFFDC7654)
+    val RibbonExtrusion = Color(0xFF7D341D)
+
+    val HillSlate = Color(0xFF3D5266)
+    val HillPlum = Color(0xFF9E4784)
+    val HillCoral = Color(0xFFF36A55)
+    val HillCopper = Color(0xFFC97848)
+    val HillGold = Color(0xFFE7B82E)
+    val HillMint = Color(0xFF5BB982)
+
+    val InkDark = Color(0xFF161814)
+    val InkMuted = Color(0xFF4A4E45)
+    val CreamText = Color(0xFFFAF6EC)
+    val StarGold = Color(0xFFE8DFC8)
+}
+
+/**
+ * Dynamic 3D Clay Theme Palette propagated via CompositionLocal so selecting any
+ * color option in Settings immediately transforms the entire application's colors.
+ */
+data class AuraClayThemePalette(
+    val id: String,
+    val nameEn: String,
+    val headerWaveFace: Color,
+    val headerWaveLip: Color,
+    val screenBackground: Color,
+    val cardFace: Color,
+    val cardLip: Color,
+    val recessedTrackBg: Color,
+    val recessedTrackBorder: Color,
+    val primaryAccentFace: Color,
+    val primaryAccentLip: Color,
+    val secondaryAccentFace: Color,
+    val secondaryAccentLip: Color,
+    val tertiaryAccentFace: Color,
+    val tertiaryAccentLip: Color,
+    val inkColor: Color,
+    val mutedInkColor: Color
+)
+
+val LocalAuraClayPalette = staticCompositionLocalOf {
+    ExpressivePalettes.getClayPalette("AuraEarthy", isDark = false)
+}
 
 data class ExpressivePaletteInfo(
     val id: String,
     val nameEn: String,
-    val nameAr: String,
     val accentColor: Color,
+    val secondarySwatchColor: Color,
     val containerColor: Color,
     val darkScheme: ColorScheme,
     val lightScheme: ColorScheme
 )
 
 object ExpressivePalettes {
-    // 1. Hyper Lime (Xiaomi HyperOS Signature)
+    // 0. Aura Earthy (Signature Forest & Terracotta Clay)
+    val AuraEarthy = ExpressivePaletteInfo(
+        id = "AuraEarthy",
+        nameEn = "Aura Earthy",
+        accentColor = Color(0xFFC86441),
+        secondarySwatchColor = Color(0xFF2B4C3E),
+        containerColor = Color(0xFF2B4C3E),
+        darkScheme = darkColorScheme(
+            primary = Color(0xFFD97754),
+            onPrimary = Color(0xFFFAF6EC),
+            primaryContainer = Color(0xFF2B4C3E),
+            onPrimaryContainer = Color(0xFFE5DEC9),
+            secondary = Color(0xFFD8AC2C),
+            onSecondary = Color(0xFF161814),
+            secondaryContainer = Color(0xFF25352C),
+            onSecondaryContainer = Color(0xFFE5DEC9),
+            tertiary = Color(0xFF3D5266),
+            tertiaryContainer = Color(0xFF1D3328),
+            background = Color(0xFF131C18),
+            surface = Color(0xFF18241E),
+            onSurface = Color(0xFFF5F0E4),
+            surfaceVariant = Color(0xFF24332B),
+            onSurfaceVariant = Color(0xFFCBC4B3),
+            outline = Color(0xFF53665B),
+            outlineVariant = Color(0xFF33443B),
+            error = Color(0xFFF36A55),
+            errorContainer = Color(0xFF6E2B19),
+            onErrorContainer = Color(0xFFFFDAD4)
+        ),
+        lightScheme = lightColorScheme(
+            primary = Color(0xFFC86441),
+            onPrimary = Color(0xFFFAF6EC),
+            primaryContainer = Color(0xFF2B4C3E),
+            onPrimaryContainer = Color(0xFFFAF6EC),
+            secondary = Color(0xFFD8AC2C),
+            onSecondary = Color(0xFF161814),
+            secondaryContainer = Color(0xFFE5DEC9),
+            onSecondaryContainer = Color(0xFF161814),
+            tertiary = Color(0xFF3D5266),
+            tertiaryContainer = Color(0xFFD5E6DC),
+            background = Color(0xFFF6F2E6),
+            surface = Color(0xFFF6F2E6),
+            onSurface = Color(0xFF161814),
+            surfaceVariant = Color(0xFFE5DEC9),
+            onSurfaceVariant = Color(0xFF3E433B),
+            outline = Color(0xFF8C8470),
+            outlineVariant = Color(0xFFCBC2A8),
+            error = Color(0xFFA84A31),
+            errorContainer = Color(0xFFF9DEDC),
+            onErrorContainer = Color(0xFF410E0B)
+        )
+    )
+
+    // 1. Slate & Amber (Deep Slate-Indigo Header + Golden Ochre Clay)
     val HyperLime = ExpressivePaletteInfo(
         id = "HyperLime",
-        nameEn = "Hyper Lime",
-        nameAr = "لايم سايبر",
-        accentColor = Color(0xFFC6FF00),
-        containerColor = Color(0xFF1E2520),
-        darkScheme = darkColorScheme(
-            primary = Color(0xFFC6FF00),
-            onPrimary = Color(0xFF1B2B00),
-            primaryContainer = Color(0xFF2E4500),
-            onPrimaryContainer = Color(0xFFD6FF47),
-            secondary = Color(0xFFA5C973),
-            onSecondary = Color(0xFF1C2D00),
-            secondaryContainer = Color(0xFF2A3420),
-            onSecondaryContainer = Color(0xFFDBF2BD),
-            tertiary = Color(0xFF81E291),
-            tertiaryContainer = Color(0xFF0E3D19),
-            background = Color(0xFF0F1210),
-            surface = Color(0xFF141815),
-            onSurface = Color(0xFFE3E8E1),
-            surfaceVariant = Color(0xFF1E2520),
-            onSurfaceVariant = Color(0xFFC4CDC0),
-            outline = Color(0xFF4C584A),
-            outlineVariant = Color(0xFF333D32)
+        nameEn = "Slate & Amber",
+        accentColor = Color(0xFFD8AC2C),
+        secondarySwatchColor = Color(0xFF2E4357),
+        containerColor = Color(0xFF2E4357),
+        darkScheme = AuraEarthy.darkScheme.copy(
+            primary = Color(0xFFE7B82E),
+            primaryContainer = Color(0xFF223344),
+            secondary = Color(0xFFC86441),
+            background = Color(0xFF121A22),
+            surface = Color(0xFF18222C)
         ),
-        lightScheme = lightColorScheme(
-            primary = Color(0xFF537A00),
-            onPrimary = Color(0xFFFFFFFF),
-            primaryContainer = Color(0xFFDDF595),
-            onPrimaryContainer = Color(0xFF162500),
-            secondary = Color(0xFF4D6031),
-            onSecondary = Color(0xFFFFFFFF),
-            secondaryContainer = Color(0xFFD3E4B8),
-            onSecondaryContainer = Color(0xFF151F08),
-            tertiary = Color(0xFF2A6836),
-            tertiaryContainer = Color(0xFFB5EFBF),
-            background = Color(0xFFF7F9F4),
-            surface = Color(0xFFFFFFFF),
-            onSurface = Color(0xFF141812),
-            surfaceVariant = Color(0xFFE4E9DE),
-            onSurfaceVariant = Color(0xFF424A3D),
-            outline = Color(0xFF75806E),
-            outlineVariant = Color(0xFFCCD4C6)
+        lightScheme = AuraEarthy.lightScheme.copy(
+            primary = Color(0xFFD8AC2C),
+            primaryContainer = Color(0xFF2E4357),
+            secondary = Color(0xFFC86441),
+            background = Color(0xFFF3F5F8),
+            surface = Color(0xFFF3F5F8)
         )
     )
 
-    // 2. Electric Cobalt
+    // 2. Ochre & Espresso (Warm Cocoa Clay Header + Ochre & Terracotta)
     val ElectricCobalt = ExpressivePaletteInfo(
         id = "ElectricCobalt",
-        nameEn = "Electric Cobalt",
-        nameAr = "أزرق كوبالت",
-        accentColor = Color(0xFF3B82F6),
-        containerColor = Color(0xFF172036),
-        darkScheme = darkColorScheme(
-            primary = Color(0xFF60A5FA),
-            onPrimary = Color(0xFF082766),
-            primaryContainer = Color(0xFF1E3A8A),
-            onPrimaryContainer = Color(0xFFBFDBFE),
-            secondary = Color(0xFF93C5FD),
-            onSecondary = Color(0xFF0F2B5C),
-            secondaryContainer = Color(0xFF1E293B),
-            onSecondaryContainer = Color(0xFFE2E8F0),
-            tertiary = Color(0xFF38BDF8),
-            tertiaryContainer = Color(0xFF0C4A6E),
-            background = Color(0xFF090D16),
-            surface = Color(0xFF0F1524),
-            onSurface = Color(0xFFE2E8F0),
-            surfaceVariant = Color(0xFF172036),
-            onSurfaceVariant = Color(0xFF94A3B8),
-            outline = Color(0xFF3B4E7A),
-            outlineVariant = Color(0xFF243252)
+        nameEn = "Ochre & Cocoa",
+        accentColor = Color(0xFFD8AC2C),
+        secondarySwatchColor = Color(0xFF4E3629),
+        containerColor = Color(0xFF4E3629),
+        darkScheme = AuraEarthy.darkScheme.copy(
+            primary = Color(0xFFE7B82E),
+            primaryContainer = Color(0xFF3B281E),
+            secondary = Color(0xFFC86441),
+            background = Color(0xFF1C1512),
+            surface = Color(0xFF261D19)
         ),
-        lightScheme = lightColorScheme(
-            primary = Color(0xFF1D4ED8),
-            onPrimary = Color(0xFFFFFFFF),
-            primaryContainer = Color(0xFFDBEAFE),
-            onPrimaryContainer = Color(0xFF1E3A8A),
-            secondary = Color(0xFF3B82F6),
-            onSecondary = Color(0xFFFFFFFF),
-            secondaryContainer = Color(0xFFE0E7FF),
-            onSecondaryContainer = Color(0xFF1E1B4B),
-            tertiary = Color(0xFF0284C7),
-            tertiaryContainer = Color(0xFFBAE6FD),
-            background = Color(0xFFF2F6FC),
-            surface = Color(0xFFFFFFFF),
-            onSurface = Color(0xFF0F172A),
-            surfaceVariant = Color(0xFFDDE6F5),
-            onSurfaceVariant = Color(0xFF334155),
-            outline = Color(0xFF64748B),
-            outlineVariant = Color(0xFFCBD5E1)
+        lightScheme = AuraEarthy.lightScheme.copy(
+            primary = Color(0xFFB58917),
+            primaryContainer = Color(0xFF4E3629),
+            secondary = Color(0xFFC86441),
+            background = Color(0xFFF8F2E8),
+            surface = Color(0xFFF8F2E8)
         )
     )
 
-    // 3. Sunset Flame
+    // 3. Terracotta & Rust (Canyon Clay Header + Coral & Gold)
     val SunsetFlame = ExpressivePaletteInfo(
         id = "SunsetFlame",
-        nameEn = "Sunset Flame",
-        nameAr = "لهب الغروب",
-        accentColor = Color(0xFFFF7A00),
-        containerColor = Color(0xFF261D18),
-        darkScheme = darkColorScheme(
-            primary = Color(0xFFFB923C),
-            onPrimary = Color(0xFF431407),
-            primaryContainer = Color(0xFF7C2D12),
-            onPrimaryContainer = Color(0xFFFFEDD5),
-            secondary = Color(0xFFFDBA74),
-            onSecondary = Color(0xFF451A03),
-            secondaryContainer = Color(0xFF2C1E18),
-            onSecondaryContainer = Color(0xFFFED7AA),
-            tertiary = Color(0xFFF87171),
-            tertiaryContainer = Color(0xFF7F1D1D),
-            background = Color(0xFF120E0C),
-            surface = Color(0xFF1A1411),
-            onSurface = Color(0xFFF5EBE6),
-            surfaceVariant = Color(0xFF261D18),
-            onSurfaceVariant = Color(0xFFD1BDB4),
-            outline = Color(0xFF5A4439),
-            outlineVariant = Color(0xFF3D2D25)
+        nameEn = "Canyon Coral",
+        accentColor = Color(0xFFF36A55),
+        secondarySwatchColor = Color(0xFF6B2F23),
+        containerColor = Color(0xFF6B2F23),
+        darkScheme = AuraEarthy.darkScheme.copy(
+            primary = Color(0xFFF36A55),
+            primaryContainer = Color(0xFF4A2018),
+            secondary = Color(0xFFE7B82E),
+            background = Color(0xFF1E1311),
+            surface = Color(0xFF281A17)
         ),
-        lightScheme = lightColorScheme(
-            primary = Color(0xFFC2410C),
-            onPrimary = Color(0xFFFFFFFF),
-            primaryContainer = Color(0xFFFFEDD5),
-            onPrimaryContainer = Color(0xFF431407),
-            secondary = Color(0xFF9A3412),
-            onSecondary = Color(0xFFFFFFFF),
-            secondaryContainer = Color(0xFFFFE4D6),
-            onSecondaryContainer = Color(0xFF3A1204),
-            tertiary = Color(0xFFB91C1C),
-            tertiaryContainer = Color(0xFFFEE2E2),
-            background = Color(0xFFFBF5F2),
-            surface = Color(0xFFFFFFFF),
-            onSurface = Color(0xFF1C130E),
-            surfaceVariant = Color(0xFFF2E2DA),
-            onSurfaceVariant = Color(0xFF4C3B33),
-            outline = Color(0xFF8C7164),
-            outlineVariant = Color(0xFFDBC5BA)
+        lightScheme = AuraEarthy.lightScheme.copy(
+            primary = Color(0xFFA84A31),
+            primaryContainer = Color(0xFF6B2F23),
+            secondary = Color(0xFFD8AC2C),
+            background = Color(0xFFFAF1EC),
+            surface = Color(0xFFFAF1EC)
         )
     )
 
-    // 4. Cyber Violet
+    // 4. Plum & Rosebud (Mulberry Clay Header + Rose & Ochre)
     val CyberViolet = ExpressivePaletteInfo(
         id = "CyberViolet",
-        nameEn = "Cyber Violet",
-        nameAr = "بنفسجي نيون",
-        accentColor = Color(0xFFA855F7),
-        containerColor = Color(0xFF241C36),
-        darkScheme = darkColorScheme(
-            primary = Color(0xFFC084FC),
-            onPrimary = Color(0xFF3B0764),
-            primaryContainer = Color(0xFF581C87),
-            onPrimaryContainer = Color(0xFFF3E8FF),
-            secondary = Color(0xFFE9D5FF),
-            onSecondary = Color(0xFF3B0764),
-            secondaryContainer = Color(0xFF251A36),
-            onSecondaryContainer = Color(0xFFE9D5FF),
-            tertiary = Color(0xFFF472B6),
-            tertiaryContainer = Color(0xFF701A75),
-            background = Color(0xFF100D18),
-            surface = Color(0xFF181324),
-            onSurface = Color(0xFFF0EBF7),
-            surfaceVariant = Color(0xFF241C36),
-            onSurfaceVariant = Color(0xFFCABEE0),
-            outline = Color(0xFF56437A),
-            outlineVariant = Color(0xFF382B52)
+        nameEn = "Plum & Velvet",
+        accentColor = Color(0xFF9E4784),
+        secondarySwatchColor = Color(0xFF472940),
+        containerColor = Color(0xFF472940),
+        darkScheme = AuraEarthy.darkScheme.copy(
+            primary = Color(0xFFB85D9C),
+            primaryContainer = Color(0xFF361E30),
+            secondary = Color(0xFFD8AC2C),
+            background = Color(0xFF1A1318),
+            surface = Color(0xFF241B22)
         ),
-        lightScheme = lightColorScheme(
-            primary = Color(0xFF7E22CE),
-            onPrimary = Color(0xFFFFFFFF),
-            primaryContainer = Color(0xFFF3E8FF),
-            onPrimaryContainer = Color(0xFF3B0764),
-            secondary = Color(0xFF6B21A8),
-            onSecondary = Color(0xFFFFFFFF),
-            secondaryContainer = Color(0xFFE9D5FF),
-            onSecondaryContainer = Color(0xFF2E0854),
-            tertiary = Color(0xFFBE185D),
-            tertiaryContainer = Color(0xFFFCE7F3),
-            background = Color(0xFFF9F5FB),
-            surface = Color(0xFFFFFFFF),
-            onSurface = Color(0xFF170F24),
-            surfaceVariant = Color(0xFFEAE0F5),
-            onSurfaceVariant = Color(0xFF463A57),
-            outline = Color(0xFF7D6C94),
-            outlineVariant = Color(0xFFD4C5E6)
+        lightScheme = AuraEarthy.lightScheme.copy(
+            primary = Color(0xFF9E4784),
+            primaryContainer = Color(0xFF472940),
+            secondary = Color(0xFFD8AC2C),
+            background = Color(0xFFF7F0F5),
+            surface = Color(0xFFF7F0F5)
         )
     )
 
-    // 5. Emerald Jade
+    // 5.Nordicfjord & Copper (Deep Teal-Slate Header + Copper Clay)
     val EmeraldJade = ExpressivePaletteInfo(
         id = "EmeraldJade",
-        nameEn = "Emerald Jade",
-        nameAr = "زمردي ملكي",
-        accentColor = Color(0xFF10B981),
-        containerColor = Color(0xFF172620),
-        darkScheme = darkColorScheme(
-            primary = Color(0xFF34D399),
-            onPrimary = Color(0xFF022C22),
-            primaryContainer = Color(0xFF064E3B),
-            onPrimaryContainer = Color(0xFFA7F3D0),
-            secondary = Color(0xFF6EE7B7),
-            onSecondary = Color(0xFF022C22),
-            secondaryContainer = Color(0xFF142921),
-            onSecondaryContainer = Color(0xFFA7F3D0),
-            tertiary = Color(0xFF2DD4BF),
-            tertiaryContainer = Color(0xFF115E59),
-            background = Color(0xFF0A110E),
-            surface = Color(0xFF0F1A15),
-            onSurface = Color(0xFFE2EBE6),
-            surfaceVariant = Color(0xFF172620),
-            onSurfaceVariant = Color(0xFFB5C7BF),
-            outline = Color(0xFF3C5C4F),
-            outlineVariant = Color(0xFF263D34)
+        nameEn = "Fjord & Copper",
+        accentColor = Color(0xFFC97848),
+        secondarySwatchColor = Color(0xFF23464A),
+        containerColor = Color(0xFF23464A),
+        darkScheme = AuraEarthy.darkScheme.copy(
+            primary = Color(0xFFD98757),
+            primaryContainer = Color(0xFF193336),
+            secondary = Color(0xFFD8AC2C),
+            background = Color(0xFF111B1D),
+            surface = Color(0xFF182528)
         ),
-        lightScheme = lightColorScheme(
-            primary = Color(0xFF047857),
-            onPrimary = Color(0xFFFFFFFF),
-            primaryContainer = Color(0xFFD1FAE5),
-            onPrimaryContainer = Color(0xFF022C22),
-            secondary = Color(0xFF065F46),
-            onSecondary = Color(0xFFFFFFFF),
-            secondaryContainer = Color(0xFFA7F3D0),
-            onSecondaryContainer = Color(0xFF022C22),
-            tertiary = Color(0xFF0F766E),
-            tertiaryContainer = Color(0xFFCCFBF1),
-            background = Color(0xFFF1F8F5),
-            surface = Color(0xFFFFFFFF),
-            onSurface = Color(0xFF0E1A14),
-            surfaceVariant = Color(0xFFDAEBE3),
-            onSurfaceVariant = Color(0xFF354A40),
-            outline = Color(0xFF628575),
-            outlineVariant = Color(0xFFB8D4C7)
-        )
-    )
-
-    // 6. Crimson Ruby
-    val CrimsonRuby = ExpressivePaletteInfo(
-        id = "CrimsonRuby",
-        nameEn = "Crimson Ruby",
-        nameAr = "ياقوتي قرمزي",
-        accentColor = Color(0xFFEF4444),
-        containerColor = Color(0xFF2A1818),
-        darkScheme = darkColorScheme(
-            primary = Color(0xFFF87171),
-            onPrimary = Color(0xFF450A0A),
-            primaryContainer = Color(0xFF7F1D1D),
-            onPrimaryContainer = Color(0xFFFEE2E2),
-            secondary = Color(0xFFFCA5A5),
-            onSecondary = Color(0xFF450A0A),
-            secondaryContainer = Color(0xFF2D1616),
-            onSecondaryContainer = Color(0xFFFECACA),
-            tertiary = Color(0xFFFB7185),
-            tertiaryContainer = Color(0xFF881337),
-            background = Color(0xFF130A0A),
-            surface = Color(0xFF1C1010),
-            onSurface = Color(0xFFF6E8E8),
-            surfaceVariant = Color(0xFF2A1818),
-            onSurfaceVariant = Color(0xFFCFB2B2),
-            outline = Color(0xFF633B3B),
-            outlineVariant = Color(0xFF422525)
-        ),
-        lightScheme = lightColorScheme(
-            primary = Color(0xFFB91C1C),
-            onPrimary = Color(0xFFFFFFFF),
-            primaryContainer = Color(0xFFFEE2E2),
-            onPrimaryContainer = Color(0xFF450A0A),
-            secondary = Color(0xFF991B1B),
-            onSecondary = Color(0xFFFFFFFF),
-            secondaryContainer = Color(0xFFFECACA),
-            onSecondaryContainer = Color(0xFF3B0707),
-            tertiary = Color(0xFF9F1239),
-            tertiaryContainer = Color(0xFFFFE4E6),
-            background = Color(0xFFFBF2F2),
-            surface = Color(0xFFFFFFFF),
-            onSurface = Color(0xFF1C0D0D),
-            surfaceVariant = Color(0xFFF3DFDF),
-            onSurfaceVariant = Color(0xFF4E3737),
-            outline = Color(0xFF8B6464),
-            outlineVariant = Color(0xFFD6BEBE)
+        lightScheme = AuraEarthy.lightScheme.copy(
+            primary = Color(0xFFC97848),
+            primaryContainer = Color(0xFF23464A),
+            secondary = Color(0xFFD8AC2C),
+            background = Color(0xFFF0F4F4),
+            surface = Color(0xFFF0F4F4)
         )
     )
 
     val allPalettes = listOf(
+        AuraEarthy,
         HyperLime,
         ElectricCobalt,
         SunsetFlame,
         CyberViolet,
-        EmeraldJade,
-        CrimsonRuby
+        EmeraldJade
     )
 
     fun getPalette(id: String): ExpressivePaletteInfo {
-        return allPalettes.firstOrNull { it.id.equals(id, ignoreCase = true) } ?: HyperLime
+        return allPalettes.firstOrNull { it.id.equals(id, ignoreCase = true) } ?: AuraEarthy
+    }
+
+    fun getClayPalette(id: String, isDark: Boolean): AuraClayThemePalette {
+        return when (id.lowercase()) {
+            "hyperlime" -> AuraClayThemePalette(
+                id = "HyperLime",
+                nameEn = "Slate & Amber",
+                headerWaveFace = if (isDark) Color(0xFF1F3040) else Color(0xFF2E4357),
+                headerWaveLip = if (isDark) Color(0xFF121D28) else Color(0xFF1B2B38),
+                screenBackground = if (isDark) Color(0xFF121A22) else Color(0xFFF2F4F7),
+                cardFace = if (isDark) Color(0xFF21303E) else Color(0xFFE1E6EC),
+                cardLip = if (isDark) Color(0xFF141E28) else Color(0xFFBCC5D0),
+                recessedTrackBg = if (isDark) Color(0xFF16212B) else Color(0xFFD0D8E2),
+                recessedTrackBorder = if (isDark) Color(0xFF33475B) else Color(0xFFB3Becc),
+                primaryAccentFace = Color(0xFFD8AC2C),
+                primaryAccentLip = Color(0xFF967314),
+                secondaryAccentFace = Color(0xFFC86441),
+                secondaryAccentLip = Color(0xFF873D23),
+                tertiaryAccentFace = Color(0xFF3D5266),
+                tertiaryAccentLip = Color(0xFF253442),
+                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF161B20),
+                mutedInkColor = if (isDark) Color(0xFFBCC6D0) else Color(0xFF49545E)
+            )
+            "electriccobalt" -> AuraClayThemePalette(
+                id = "ElectricCobalt",
+                nameEn = "Ochre & Cocoa",
+                headerWaveFace = if (isDark) Color(0xFF38261D) else Color(0xFF4E3629),
+                headerWaveLip = if (isDark) Color(0xFF221610) else Color(0xFF332118),
+                screenBackground = if (isDark) Color(0xFF1A1411) else Color(0xFFF8F1E7),
+                cardFace = if (isDark) Color(0xFF2E231E) else Color(0xFFE9DFCF),
+                cardLip = if (isDark) Color(0xFF1C1511) else Color(0xFFC9B9A3),
+                recessedTrackBg = if (isDark) Color(0xFF211814) else Color(0xFFD9CBB6),
+                recessedTrackBorder = if (isDark) Color(0xFF4A382F) else Color(0xFFBFB099),
+                primaryAccentFace = Color(0xFFD8AC2C),
+                primaryAccentLip = Color(0xFF967314),
+                secondaryAccentFace = Color(0xFFA84A31),
+                secondaryAccentLip = Color(0xFF6E2B19),
+                tertiaryAccentFace = Color(0xFF6B4C3B),
+                tertiaryAccentLip = Color(0xFF452F23),
+                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF211813),
+                mutedInkColor = if (isDark) Color(0xFFD4C4B4) else Color(0xFF5C4B40)
+            )
+            "sunsetflame" -> AuraClayThemePalette(
+                id = "SunsetFlame",
+                nameEn = "Canyon Coral",
+                headerWaveFace = if (isDark) Color(0xFF4A2018) else Color(0xFF6B2F23),
+                headerWaveLip = if (isDark) Color(0xFF2B110C) else Color(0xFF471C13),
+                screenBackground = if (isDark) Color(0xFF1C1210) else Color(0xFFFAF0EB),
+                cardFace = if (isDark) Color(0xFF30201C) else Color(0xFFEEDCD4),
+                cardLip = if (isDark) Color(0xFF1E1310) else Color(0xFFCDB4A8),
+                recessedTrackBg = if (isDark) Color(0xFF241613) else Color(0xFFE0C8BE),
+                recessedTrackBorder = if (isDark) Color(0xFF52342D) else Color(0xFFC4A89C),
+                primaryAccentFace = Color(0xFFF06752),
+                primaryAccentLip = Color(0xFF9E3828),
+                secondaryAccentFace = Color(0xFFD8AC2C),
+                secondaryAccentLip = Color(0xFF967314),
+                tertiaryAccentFace = Color(0xFF7D4B6D),
+                tertiaryAccentLip = Color(0xFF4F2C44),
+                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF241411),
+                mutedInkColor = if (isDark) Color(0xFFD9C2B8) else Color(0xFF63463F)
+            )
+            "cyberviolet" -> AuraClayThemePalette(
+                id = "CyberViolet",
+                nameEn = "Plum & Velvet",
+                headerWaveFace = if (isDark) Color(0xFF341D2F) else Color(0xFF4A2A43),
+                headerWaveLip = if (isDark) Color(0xFF1F101C) else Color(0xFF30192B),
+                screenBackground = if (isDark) Color(0xFF171116) else Color(0xFFF7F0F5),
+                cardFace = if (isDark) Color(0xFF2B2029) else Color(0xFFE8DCE5),
+                cardLip = if (isDark) Color(0xFF1B1319) else Color(0xFFC6B4C1),
+                recessedTrackBg = if (isDark) Color(0xFF20171E) else Color(0xFFD8C7D3),
+                recessedTrackBorder = if (isDark) Color(0xFF493545) else Color(0xFFBCA7B6),
+                primaryAccentFace = Color(0xFF9E4784),
+                primaryAccentLip = Color(0xFF662753),
+                secondaryAccentFace = Color(0xFFD8AC2C),
+                secondaryAccentLip = Color(0xFF967314),
+                tertiaryAccentFace = Color(0xFFC86441),
+                tertiaryAccentLip = Color(0xFF873D23),
+                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF20151E),
+                mutedInkColor = if (isDark) Color(0xFFD1C0CD) else Color(0xFF5B4757)
+            )
+            "emeraldjade" -> AuraClayThemePalette(
+                id = "EmeraldJade",
+                nameEn = "Fjord & Copper",
+                headerWaveFace = if (isDark) Color(0xFF183134) else Color(0xFF23464A),
+                headerWaveLip = if (isDark) Color(0xFF0E1E20) else Color(0xFF152D30),
+                screenBackground = if (isDark) Color(0xFF111B1D) else Color(0xFFF1F5F4),
+                cardFace = if (isDark) Color(0xFF1F3033) else Color(0xFFDCE5E4),
+                cardLip = if (isDark) Color(0xFF131E20) else Color(0xFFB7C5C3),
+                recessedTrackBg = if (isDark) Color(0xFF162426) else Color(0xFFCBD7D5),
+                recessedTrackBorder = if (isDark) Color(0xFF314D52) else Color(0xFFAABAB8),
+                primaryAccentFace = Color(0xFFC97848),
+                primaryAccentLip = Color(0xFF874B27),
+                secondaryAccentFace = Color(0xFFD8AC2C),
+                secondaryAccentLip = Color(0xFF967314),
+                tertiaryAccentFace = Color(0xFF3D5266),
+                tertiaryAccentLip = Color(0xFF253442),
+                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF141E20),
+                mutedInkColor = if (isDark) Color(0xFFBDD0CE) else Color(0xFF46595B)
+            )
+            else -> AuraClayThemePalette(
+                id = "AuraEarthy",
+                nameEn = "Aura Earthy",
+                headerWaveFace = if (isDark) AuraTactileColors.ForestHeaderDark else AuraTactileColors.ForestHeaderLight,
+                headerWaveLip = if (isDark) Color(0xFF0E1D16) else Color(0xFF1E372C),
+                screenBackground = if (isDark) AuraTactileColors.ParchmentBgDark else AuraTactileColors.ParchmentBgLight,
+                cardFace = if (isDark) AuraTactileColors.SandMedallionDark else AuraTactileColors.TileSandFace,
+                cardLip = if (isDark) AuraTactileColors.SandMedallionLipDark else AuraTactileColors.TileSandLip,
+                recessedTrackBg = if (isDark) Color(0xFF16221C) else Color(0xFFD6CEB8),
+                recessedTrackBorder = if (isDark) Color(0xFF33473C) else Color(0xFFBDB39A),
+                primaryAccentFace = AuraTactileColors.TileTerracottaFace,
+                primaryAccentLip = AuraTactileColors.TileTerracottaLip,
+                secondaryAccentFace = AuraTactileColors.TileMustardFace,
+                secondaryAccentLip = AuraTactileColors.TileMustardLip,
+                tertiaryAccentFace = AuraTactileColors.TileSlateFace,
+                tertiaryAccentLip = AuraTactileColors.TileSlateLip,
+                inkColor = if (isDark) AuraTactileColors.CreamText else AuraTactileColors.InkDark,
+                mutedInkColor = if (isDark) AuraTactileColors.SandMedallionLight.copy(alpha = 0.78f) else AuraTactileColors.InkMuted
+            )
+        }
     }
 }
-

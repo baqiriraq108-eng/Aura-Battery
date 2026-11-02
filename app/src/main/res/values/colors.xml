@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="olive_background_dark">#12140F</color>
+    <color name="olive_background_dark">#131C18</color>
+    <color name="parchment_background_light">#F6F2E6</color>
     <color name="olive_primary">#A3B18A</color>
+    <color name="transparent_splash">#00000000</color>
 </resources>
-
