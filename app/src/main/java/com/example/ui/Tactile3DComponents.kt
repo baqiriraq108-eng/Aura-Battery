@@ -148,7 +148,7 @@ fun StarTopNavigationBar(
             label = "Settings",
             activeFace = AuraTactileColors.TileMustardFace,
             activeLip = AuraTactileColors.TileMustardLip,
-            activeText = AuraTactileColors.InkDark
+            activeText = AuraTactileColors.CreamText
         )
     )
 
@@ -290,7 +290,7 @@ private fun NavBadgeItem(
                         fontFamily = PlusJakartaSansFontFamily,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 14.sp,
-                        color = AuraTactileColors.CreamText.copy(alpha = 0.92f)
+                        color = AuraTactileColors.CreamText
                     )
                 )
             }
@@ -524,7 +524,7 @@ fun SandHeroMedallion(
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = UnifiedClayHeadingFontSize,
                         letterSpacing = 1.1.sp,
-                        color = if (isCharging) clayPalette.primaryAccentFace else inkColor
+                        color = inkColor
                     ),
                     textAlign = TextAlign.Center
                 )
@@ -1195,7 +1195,7 @@ fun TactileMetricTile(
                     fontFamily = PlusJakartaSansFontFamily,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 15.sp,
-                    color = textColor.copy(alpha = 0.94f)
+                    color = textColor
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -1764,7 +1764,7 @@ fun Clay3DColorMedallion(
     val clayPalette = LocalAuraClayPalette.current
     val plinthFace = if (selected) clayPalette.primaryAccentFace else clayPalette.recessedTrackBg
     val plinthLip = if (selected) clayPalette.primaryAccentLip else clayPalette.recessedTrackBorder
-    val labelColor = if (selected) AuraTactileColors.CreamText else clayPalette.inkColor
+    val labelColor = if (selected) AuraTactileColors.textOn(clayPalette.primaryAccentFace) else clayPalette.inkColor
 
     Tactile3DPebbleCard(
         faceColor = plinthFace,

@@ -609,7 +609,7 @@ fun DashboardScreen(
                         value = liveState.sourceString,
                         faceColor = AuraTactileColors.TileMustardFace,
                         lipColor = AuraTactileColors.TileMustardLip,
-                        textColor = AuraTactileColors.InkDark,
+                        textColor = AuraTactileColors.CreamText,
                         iconType = TactileMetricIconType.LIGHTNING_BOLT
                     )
                 )
@@ -831,7 +831,7 @@ private fun RepeatingClayVisualAlertBanner(
                     fontFamily = PlusJakartaSansFontFamily,
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,
-                    color = AuraTactileColors.CreamText.copy(alpha = 0.95f)
+                    color = AuraTactileColors.CreamText
                 ),
                 textAlign = TextAlign.Center
             )
@@ -858,7 +858,7 @@ private fun RepeatingClayVisualAlertBanner(
                             fontFamily = PlusJakartaSansFontFamily,
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 13.sp,
-                            color = AuraTactileColors.InkDark
+                            color = AuraTactileColors.CreamText
                         ),
                         textAlign = TextAlign.Center
                     )

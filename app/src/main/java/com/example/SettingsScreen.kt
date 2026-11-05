@@ -9,8 +9,8 @@ import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,18 +36,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import kotlin.math.roundToInt
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -137,40 +139,11 @@ fun SettingsScreen(
     }
 
     // Quiet Hours Time Options animation state:
-    // - Opening: progressive cascading slide-down row-by-row
-    // - Closing: single unified motion without progressive/staggered row effect
+    // Symmetrical 350ms Fade + Expand/Collapse transition for both opening and closing
     var activeTimeTarget by remember { mutableStateOf<QuietTimeTarget?>(null) }
-    var renderedTimeTarget by remember { mutableStateOf<QuietTimeTarget?>(null) }
-    var isOpeningCascade by remember { mutableStateOf(true) }
-    val trayAnimProgress = remember { Animatable(0f) }
-
-    LaunchedEffect(activeTimeTarget) {
-        if (activeTimeTarget != null) {
-            val wasClosed = renderedTimeTarget == null
-            renderedTimeTarget = activeTimeTarget
-            isOpeningCascade = true
-            if (wasClosed) {
-                trayAnimProgress.snapTo(0f)
-                trayAnimProgress.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
-                )
-            } else {
-                trayAnimProgress.snapTo(0.18f)
-                trayAnimProgress.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(durationMillis = 270, easing = FastOutSlowInEasing)
-                )
-            }
-        } else if (renderedTimeTarget != null) {
-            // Single unified collapse motion without staggered row effect
-            isOpeningCascade = false
-            trayAnimProgress.animateTo(
-                targetValue = 0f,
-                animationSpec = tween(durationMillis = 190, easing = FastOutSlowInEasing)
-            )
-            renderedTimeTarget = null
-        }
+    var lastTimeTarget by remember { mutableStateOf(QuietTimeTarget.FROM) }
+    if (activeTimeTarget != null) {
+        lastTimeTarget = activeTimeTarget!!
     }
 
     // Ringtone Picker Launcher (supports Xiaomi HyperOS/MIUI Theme Ringtone Store & System Picker)
@@ -347,7 +320,11 @@ fun SettingsScreen(
                                     fontFamily = PlusJakartaSansFontFamily,
                                     fontWeight = FontWeight.ExtraBold,
                                     fontSize = 12.sp,
-                                    color = if (backgroundServiceEnabled) AuraTactileColors.CreamText else inkColor
+                                    color = if (backgroundServiceEnabled) {
+                                        AuraTactileColors.textOn(clayPalette.primaryAccentFace)
+                                    } else {
+                                        inkColor
+                                    }
                                 )
                             )
                         }
@@ -420,7 +397,7 @@ fun SettingsScreen(
                         valueRange = 5..49,
                         barColor = clayPalette.secondaryAccentFace,
                         lipColor = clayPalette.secondaryAccentLip,
-                        badgeTextColor = AuraTactileColors.InkDark,
+                        badgeTextColor = AuraTactileColors.CreamText,
                         isDark = isDark,
                         onValueChange = { localLowThresh = it },
                         onValueChangeFinished = {
@@ -452,7 +429,11 @@ fun SettingsScreen(
                                     text = "${seconds}s",
                                     faceColor = if (isSelected) clayPalette.primaryAccentFace else clayPalette.recessedTrackBg,
                                     lipColor = if (isSelected) clayPalette.primaryAccentLip else clayPalette.recessedTrackBorder,
-                                    textColor = if (isSelected) AuraTactileColors.CreamText else inkColor,
+                                    textColor = if (isSelected) {
+                                        AuraTactileColors.textOn(clayPalette.primaryAccentFace)
+                                    } else {
+                                        inkColor
+                                    },
                                     lipDepth = if (isSelected) 4.dp else 2.5.dp,
                                     cornerRadius = 13.dp,
                                     onClick = {
@@ -538,7 +519,7 @@ fun SettingsScreen(
                                         fontWeight = FontWeight.ExtraBold,
                                         fontSize = 10.sp,
                                         letterSpacing = 0.6.sp,
-                                        color = AuraTactileColors.CreamText.copy(alpha = 0.82f)
+                                        color = AuraTactileColors.CreamText
                                     )
                                 )
                                 Text(
@@ -569,7 +550,7 @@ fun SettingsScreen(
                 contentPadding = PaddingValues(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column {
                     // Header Row: "Quiet Hours" + Single Clay3DSwitch
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -593,6 +574,8 @@ fun SettingsScreen(
                         )
                     }
 
+                    Spacer(modifier = Modifier.height(12.dp))
+
                     // Symmetrical 2-Column 3D Clay "FROM" & "TO" Time Selector Cards
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -605,7 +588,7 @@ fun SettingsScreen(
                             isExpanded = activeTimeTarget == QuietTimeTarget.FROM,
                             accentFace = clayPalette.primaryAccentFace,
                             accentLip = clayPalette.primaryAccentLip,
-                            accentText = AuraTactileColors.CreamText,
+                            accentText = AuraTactileColors.textOn(clayPalette.primaryAccentFace),
                             onPodClick = {
                                 activeTimeTarget = if (activeTimeTarget == QuietTimeTarget.FROM) null else QuietTimeTarget.FROM
                             },
@@ -628,7 +611,7 @@ fun SettingsScreen(
                             isExpanded = activeTimeTarget == QuietTimeTarget.TO,
                             accentFace = clayPalette.tertiaryAccentFace,
                             accentLip = clayPalette.tertiaryAccentLip,
-                            accentText = AuraTactileColors.CreamText,
+                            accentText = AuraTactileColors.textOn(clayPalette.tertiaryAccentFace),
                             onPodClick = {
                                 activeTimeTarget = if (activeTimeTarget == QuietTimeTarget.TO) null else QuietTimeTarget.TO
                             },
@@ -645,51 +628,82 @@ fun SettingsScreen(
                         )
                     }
 
-                    // Progressive Cascading Slide-Down on Open / Single Unified Collapse on Close
-                    val target = renderedTimeTarget
-                    if (target != null) {
+                    // Smooth, zero-jitter bottom-to-top Curtain Close & top-to-bottom Open for Time Options Panel.
+                    // Including the 12.dp top spacing inside the measured height ensures the panel wipes
+                    // continuously from the bottom edge through the "FROM/TO TIME OPTIONS" header and
+                    // all the way to 0px without stalling on the title row or snapping at completion.
+                    val isTrayOpen = activeTimeTarget != null
+                    val openEasing = remember { CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f) }
+                    val closeBottomToTopEasing = remember { CubicBezierEasing(0.35f, 0.0f, 0.90f, 1.0f) }
+                    val trayExpandFraction by animateFloatAsState(
+                        targetValue = if (isTrayOpen) 1f else 0f,
+                        animationSpec = tween(
+                            durationMillis = if (isTrayOpen) 260 else 240,
+                            easing = if (isTrayOpen) openEasing else closeBottomToTopEasing
+                        ),
+                        label = "QuietTimeOptionsTrayFraction"
+                    )
+
+                    if (trayExpandFraction > 0f) {
+                        val target = activeTimeTarget ?: lastTimeTarget
                         val isFrom = target == QuietTimeTarget.FROM
                         val selectedHour = if (isFrom) localStartHour else localEndHour
                         val selectedAmPm = if (isFrom) localStartAmPm else localEndAmPm
                         val activeAccentFace = if (isFrom) clayPalette.primaryAccentFace else clayPalette.tertiaryAccentFace
                         val activeAccentLip = if (isFrom) clayPalette.primaryAccentLip else clayPalette.tertiaryAccentLip
+                        val activeAccentText = AuraTactileColors.textOn(activeAccentFace)
 
-                        ClayTimeSelectionOptionsTray(
-                            title = if (isFrom) "FROM TIME OPTIONS" else "TO TIME OPTIONS",
-                            selectedHour = selectedHour,
-                            selectedAmPm = selectedAmPm,
-                            accentFace = activeAccentFace,
-                            accentLip = activeAccentLip,
-                            animProgress = trayAnimProgress.value,
-                            isCascadingOpen = isOpeningCascade,
-                            onSelectHour = { pickedHour ->
-                                if (isFrom) {
-                                    localStartHour = pickedHour
-                                    coroutineScope.launch {
-                                        telemetryDataStore.saveQuietHoursStartHour(pickedHour)
-                                    }
-                                } else {
-                                    localEndHour = pickedHour
-                                    coroutineScope.launch {
-                                        telemetryDataStore.saveQuietHoursEndHour(pickedHour)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clipToBounds()
+                                .layout { measurable, constraints ->
+                                    val placeable = measurable.measure(constraints)
+                                    val currentHeight = (placeable.height * trayExpandFraction)
+                                        .roundToInt()
+                                        .coerceIn(0, placeable.height)
+                                    layout(placeable.width, currentHeight) {
+                                        placeable.placeRelative(0, 0)
                                     }
                                 }
-                            },
-                            onSelectAmPm = { pickedAmPm ->
-                                if (isFrom) {
-                                    localStartAmPm = pickedAmPm
-                                    coroutineScope.launch {
-                                        telemetryDataStore.saveQuietHoursStartAmPm(pickedAmPm)
+                                .padding(top = 12.dp)
+                        ) {
+                            ClayTimeSelectionOptionsTray(
+                                title = if (isFrom) "FROM TIME OPTIONS" else "TO TIME OPTIONS",
+                                selectedHour = selectedHour,
+                                selectedAmPm = selectedAmPm,
+                                accentFace = activeAccentFace,
+                                accentLip = activeAccentLip,
+                                accentText = activeAccentText,
+                                onSelectHour = { pickedHour ->
+                                    if (isFrom) {
+                                        localStartHour = pickedHour
+                                        coroutineScope.launch {
+                                            telemetryDataStore.saveQuietHoursStartHour(pickedHour)
+                                        }
+                                    } else {
+                                        localEndHour = pickedHour
+                                        coroutineScope.launch {
+                                            telemetryDataStore.saveQuietHoursEndHour(pickedHour)
+                                        }
                                     }
-                                } else {
-                                    localEndAmPm = pickedAmPm
-                                    coroutineScope.launch {
-                                        telemetryDataStore.saveQuietHoursEndAmPm(pickedAmPm)
+                                },
+                                onSelectAmPm = { pickedAmPm ->
+                                    if (isFrom) {
+                                        localStartAmPm = pickedAmPm
+                                        coroutineScope.launch {
+                                            telemetryDataStore.saveQuietHoursStartAmPm(pickedAmPm)
+                                        }
+                                    } else {
+                                        localEndAmPm = pickedAmPm
+                                        coroutineScope.launch {
+                                            telemetryDataStore.saveQuietHoursEndAmPm(pickedAmPm)
+                                        }
                                     }
-                                }
-                            },
-                            onClose = { activeTimeTarget = null }
-                        )
+                                },
+                                onClose = { activeTimeTarget = null }
+                            )
+                        }
                     }
                 }
             }
@@ -769,7 +783,7 @@ fun SettingsScreen(
                             active = showChargeMethod,
                             activeFaceColor = AuraTactileColors.TileMustardFace,
                             activeLipColor = AuraTactileColors.TileMustardLip,
-                            activeTextColor = AuraTactileColors.InkDark,
+                            activeTextColor = AuraTactileColors.CreamText,
                             onClick = {
                                 coroutineScope.launch { telemetryDataStore.saveShowChargeMethod(!showChargeMethod) }
                             },
@@ -1146,7 +1160,7 @@ private fun ClayQuietTimePod(
     Tactile3DPebbleCard(
         faceColor = if (isExpanded) accentFace.copy(alpha = 0.16f) else clayPalette.recessedTrackBg,
         lipColor = if (isExpanded) accentFace else clayPalette.recessedTrackBorder,
-        lipDepth = if (isExpanded) 5.dp else 4.dp,
+        lipDepth = 4.dp,
         cornerRadius = 18.dp,
         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 12.dp),
         onClick = onPodClick,
@@ -1197,7 +1211,7 @@ private fun ClayQuietTimePod(
                         faceColor = if (isSelected) accentFace else clayPalette.cardFace,
                         lipColor = if (isSelected) accentLip else clayPalette.cardLip,
                         textColor = if (isSelected) accentText else clayPalette.inkColor,
-                        lipDepth = if (isSelected) 3.5.dp else 2.5.dp,
+                        lipDepth = 3.dp,
                         cornerRadius = 12.dp,
                         onClick = { onAmPmSelect(period) },
                         modifier = Modifier
@@ -1211,9 +1225,8 @@ private fun ClayQuietTimePod(
 }
 
 /**
- * 3D Clay Time Selection Options Tray with dual-mode animation:
- * - Opening (`isCascadingOpen = true`): reveals the rows with a smooth, fluid, progressive cascading slide-down animation.
- * - Closing (`isCascadingOpen = false`): hides the entire tray smoothly in a single, unified motion without any progressive/staggered row effect.
+ * 3D Clay Time Selection Options Tray with fixed internal geometry so bottom-to-top
+ * curtain closing and top-to-bottom opening never re-measure or shift any child rows.
  */
 @Composable
 private fun ClayTimeSelectionOptionsTray(
@@ -1222,8 +1235,7 @@ private fun ClayTimeSelectionOptionsTray(
     selectedAmPm: String,
     accentFace: Color,
     accentLip: Color,
-    animProgress: Float,
-    isCascadingOpen: Boolean,
+    accentText: Color,
     onSelectHour: (Int) -> Unit,
     onSelectAmPm: (String) -> Unit,
     onClose: () -> Unit
@@ -1231,29 +1243,9 @@ private fun ClayTimeSelectionOptionsTray(
     val clayPalette = LocalAuraClayPalette.current
     val hours = remember { (1..12).toList().chunked(4) }
 
-    fun computeRowCascadeProgress(rowIndex: Int): Float {
-        if (!isCascadingOpen) return 1f
-        val startFraction = rowIndex * 0.13f
-        val spanFraction = 0.48f
-        return ((animProgress - startFraction) / spanFraction).coerceIn(0f, 1f)
-    }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .graphicsLayer {
-                if (isCascadingOpen) {
-                    val containerAlpha = (animProgress * 2.2f).coerceIn(0f, 1f)
-                    alpha = containerAlpha
-                    translationY = (1f - containerAlpha) * (-10.dp.toPx())
-                } else {
-                    val p = animProgress.coerceIn(0f, 1f)
-                    alpha = p
-                    translationY = (1f - p) * (-16.dp.toPx())
-                    scaleY = 0.90f + 0.10f * p
-                    transformOrigin = TransformOrigin(0.5f, 0f)
-                }
-            }
             .clip(RoundedCornerShape(20.dp))
             .background(clayPalette.recessedTrackBg)
             .border(1.5.dp, clayPalette.recessedTrackBorder, RoundedCornerShape(20.dp))
@@ -1265,14 +1257,8 @@ private fun ClayTimeSelectionOptionsTray(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Row 0: Header Row (Title + Done Button)
-            val headerProgress = computeRowCascadeProgress(0)
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .graphicsLayer {
-                        alpha = headerProgress
-                        translationY = (1f - headerProgress) * (-16.dp.toPx())
-                    },
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -1291,7 +1277,7 @@ private fun ClayTimeSelectionOptionsTray(
                     text = "DONE",
                     faceColor = accentFace,
                     lipColor = accentLip,
-                    textColor = AuraTactileColors.CreamText,
+                    textColor = accentText,
                     lipDepth = 3.dp,
                     cornerRadius = 11.dp,
                     onClick = onClose,
@@ -1300,15 +1286,9 @@ private fun ClayTimeSelectionOptionsTray(
             }
 
             // Rows 1..3: 4x3 Grid of Lightweight 3D Clay Hour Buttons (1:00 to 12:00)
-            hours.forEachIndexed { idx, rowHours ->
-                val rowProgress = computeRowCascadeProgress(idx + 1)
+            hours.forEach { rowHours ->
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .graphicsLayer {
-                            alpha = rowProgress
-                            translationY = (1f - rowProgress) * (-18.dp.toPx())
-                        },
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     rowHours.forEach { hr ->
@@ -1317,8 +1297,8 @@ private fun ClayTimeSelectionOptionsTray(
                             text = "$hr:00",
                             faceColor = if (isSelected) accentFace else clayPalette.cardFace,
                             lipColor = if (isSelected) accentLip else clayPalette.cardLip,
-                            textColor = if (isSelected) AuraTactileColors.CreamText else clayPalette.inkColor,
-                            lipDepth = if (isSelected) 4.dp else 2.5.dp,
+                            textColor = if (isSelected) accentText else clayPalette.inkColor,
+                            lipDepth = 3.dp,
                             cornerRadius = 13.dp,
                             onClick = { onSelectHour(hr) },
                             modifier = Modifier
@@ -1330,14 +1310,8 @@ private fun ClayTimeSelectionOptionsTray(
             }
 
             // Row 4: Symmetrical 2-Column AM / PM Selector inside the Time Options Tray
-            val amPmRowProgress = computeRowCascadeProgress(4)
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .graphicsLayer {
-                        alpha = amPmRowProgress
-                        translationY = (1f - amPmRowProgress) * (-18.dp.toPx())
-                    },
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 listOf("AM", "PM").forEach { period ->
@@ -1346,8 +1320,8 @@ private fun ClayTimeSelectionOptionsTray(
                         text = period,
                         faceColor = if (isSelected) accentFace else clayPalette.cardFace,
                         lipColor = if (isSelected) accentLip else clayPalette.cardLip,
-                        textColor = if (isSelected) AuraTactileColors.CreamText else clayPalette.inkColor,
-                        lipDepth = if (isSelected) 4.dp else 2.5.dp,
+                        textColor = if (isSelected) accentText else clayPalette.inkColor,
+                        lipDepth = 3.dp,
                         cornerRadius = 13.dp,
                         onClick = { onSelectAmPm(period) },
                         modifier = Modifier

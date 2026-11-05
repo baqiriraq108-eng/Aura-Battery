@@ -212,7 +212,7 @@ fun ClayChargeCurveShowcaseCard(
                     value = "$minRecorded%",
                     faceColor = AuraTactileColors.TileMustardFace,
                     lipColor = AuraTactileColors.TileMustardLip,
-                    textColor = AuraTactileColors.InkDark
+                    textColor = AuraTactileColors.CreamText
                 )
             )
             if (liveState.voltage != null && liveState.voltage > 0) {
@@ -252,7 +252,7 @@ fun ClayChargeCurveShowcaseCard(
                     value = durationString,
                     faceColor = AuraTactileColors.TileMustardFace,
                     lipColor = AuraTactileColors.TileMustardLip,
-                    textColor = AuraTactileColors.InkDark
+                    textColor = AuraTactileColors.CreamText
                 )
             )
             if (liveState.temperature != null && liveState.temperature > 0f) {
@@ -707,7 +707,7 @@ fun ClayChargeCurveShowcaseCard(
                         value = "$avgRecorded%",
                         faceColor = clayPalette.primaryAccentFace,
                         lipColor = clayPalette.primaryAccentLip,
-                        textColor = AuraTactileColors.CreamText,
+                        textColor = AuraTactileColors.textOn(clayPalette.primaryAccentFace),
                         modifier = Modifier.weight(1f)
                     )
                     ClayMiniStatBadge(
@@ -763,7 +763,7 @@ private fun ClayMiniStatBadge(
                     fontFamily = PlusJakartaSansFontFamily,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 10.sp,
-                    color = textColor.copy(alpha = 0.88f)
+                    color = textColor
                 )
             )
             Spacer(modifier = Modifier.height(2.dp))

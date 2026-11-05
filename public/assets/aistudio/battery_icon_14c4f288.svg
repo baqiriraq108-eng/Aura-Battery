@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1024" height="1024">
+  <defs>
+    <!-- تدرج مطفأ وناعم لجسم الأيقونة (مظهر طباشيري خافت وبتباين منخفض) -->
+    <linearGradient id="squircleGrad" x1="20%" y1="10%" x2="80%" y2="90%">
+      <stop offset="0%" stop-color="#C5684D" />
+      <stop offset="50%" stop-color="#BC6047" />
+      <stop offset="100%" stop-color="#B2573E" />
+    </linearGradient>
+
+    <!-- إضاءة طباشيرية خافتة جداً وبدون أي لمعان زجاجي -->
+    <linearGradient id="squircleHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#DDA18F" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#BC6047" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- تدرج مطفأ للتجويف الدائري بتدرج طفيف متقارب -->
+    <linearGradient id="circleRecessGrad" x1="30%" y1="15%" x2="70%" y2="85%">
+      <stop offset="0%" stop-color="#954530" />
+      <stop offset="60%" stop-color="#9E4D36" />
+      <stop offset="100%" stop-color="#A5543D" />
+    </linearGradient>
+
+    <!-- حافة التجويف بتباين مخفف -->
+    <linearGradient id="circleGrooveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#803521" />
+      <stop offset="100%" stop-color="#AF573E" />
+    </linearGradient>
+
+    <!-- تدرج كحلي رمادي مطفأ وخافت لجسم البطارية -->
+    <linearGradient id="batteryGrad" x1="25%" y1="10%" x2="75%" y2="90%">
+      <stop offset="0%" stop-color="#475769" />
+      <stop offset="50%" stop-color="#3F4D5D" />
+      <stop offset="100%" stop-color="#364351" />
+    </linearGradient>
+
+    <!-- أصفر طباشيري هادئ لقطب البطارية -->
+    <linearGradient id="capGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E2B14A" />
+      <stop offset="100%" stop-color="#C69333" />
+    </linearGradient>
+
+    <!-- أصفر خافت للصاعقة بدون توهج أو بريق -->
+    <linearGradient id="boltGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#E8B94F" />
+      <stop offset="100%" stop-color="#CE9B36" />
+    </linearGradient>
+  </defs>
+
+  <!-- ================= 1. جسم الأيقونة الخارجي ================= -->
+  <!-- سماكة البروز بظل هادئ منخفض التباين -->
+  <rect x="42" y="54" width="428" height="424" rx="102" ry="102" fill="#8F3E29" />
+
+  <!-- السطح الأساسي للأيقونة بلون مطفأ -->
+  <rect x="42" y="40" width="428" height="424" rx="102" ry="102" fill="url(#squircleGrad)" />
+
+  <!-- شطفة إضاءة جافة وغير عاكسة -->
+  <rect x="44" y="42" width="424" height="210" rx="100" ry="100" fill="url(#squircleHighlight)" />
+
+  <!-- ================= 2. التجويف الدائري الغائر ================= -->
+  <circle cx="256" cy="260" r="138" fill="url(#circleGrooveGrad)" />
+  <circle cx="256" cy="254" r="134" fill="#7C3320" />
+  <circle cx="256" cy="252" r="132" fill="url(#circleRecessGrad)" />
+  <circle cx="256" cy="252" r="128" fill="none" stroke="#8C412C" stroke-width="3" opacity="0.35" />
+
+  <!-- ================= 3. قطب البطارية الطباشيري ================= -->
+  <rect x="224" y="146" width="64" height="30" rx="14" ry="14" fill="#996D1F" />
+  <rect x="224" y="142" width="64" height="30" rx="14" ry="14" fill="url(#capGrad)" />
+
+  <!-- ================= 4. جسم البطارية ================= -->
+  <!-- قاعدة داكنة ناعمة بدون سواد حالك -->
+  <rect x="183" y="174" width="146" height="154" rx="38" fill="#283340" />
+
+  <!-- سطح البطارية المطفأ -->
+  <rect x="183" y="166" width="146" height="154" rx="38" fill="url(#batteryGrad)" />
+
+  <!-- حافة علوية جافة وخفيفة بدلاً من اللمعة البلاستيكية -->
+  <path d="M 190 200 C 190 178, 204 168, 226 168 L 286 168 C 308 168, 322 178, 322 200" fill="none" stroke="#687A8E" stroke-width="2" stroke-linecap="round" opacity="0.2" />
+
+  <!-- ================= 5. صاعقة البرق ================= -->
+  <!-- ظل ساقط شفاف وخافت جداً -->
+  <path d="M 276 195
+           L 230 259
+           L 255 259
+           L 242 319
+           L 294 245
+           L 267 245
+           Z" fill="#242E3B" opacity="0.4" />
+
+  <!-- جسم الصاعقة الطباشيري -->
+  <path d="M 274 187
+           L 226 253
+           L 253 253
+           L 240 311
+           L 292 239
+           L 263 239
+           Z" fill="url(#boltGrad)" />
+</svg>

@@ -1,6 +1,6 @@
 {
-  "summary":  "Implementation plan for instant, jitter-free cold start:\n- Reads initial battery state synchronously via sticky Intent.ACTION_BATTERY_CHANGED (0ms).\n- Pre-warms DataStore preferences and recent Room database logs before the first frame with a 250ms safety timeout.\n- Injects pre-warmed values as initial states into Jetpack Compose state collectors to prevent morphing or redraws.\n- Harmonizes window backgrounds and removes windowDisablePreview to eliminate blank flashes.",
-  "updatedAt":  "2026-11-02T12:12:41.202809781Z",
-  "requestFeedback":  true,
-  "userFacing":  true
+  "summary": "خطة إزالة الإطار الأبيض الخارجي حول أيقونة التطبيق وتكبير الأيقونة لتملأ كامل مساحة الأيقونة باللون البرتقالي الطيني الحالي مع الحفاظ على كافة التفاصيل بأعلى دقة متجهية (Vector).",
+  "updatedAt": "2026-11-05T16:09:32.386886259Z",
+  "requestFeedback": true,
+  "userFacing": true
 }

@@ -1,11 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <!-- Transparent foreground so the Android launcher never shifts or animates foreground vs background on app close -->
-    <path
-        android:pathData="M0,0 h108 v108 h-108 Z"
-        android:fillColor="#00000000" />
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!--
+      Enlarged, ultra-crisp 512x512 vector emblem (scale=0.86 centered at 256,256)
+      containing the exact recessed circular well, 3D battery terminal cap, matte slate
+      battery body, and chalky yellow lightning bolt on top of the full-bleed terracotta container.
+    -->
+    <group
+        android:pivotX="256"
+        android:pivotY="256"
+        android:scaleX="0.86"
+        android:scaleY="0.86"
+        android:translateY="-2.0">
+
+        <!-- ================= 2. التجويف الدائري الغائر ================= -->
+        <path android:pathData="M256,122 A138,138 0 1 1 256,398 A138,138 0 1 1 256,122 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:endX="256.0"
+                    android:endY="398.0"
+                    android:startX="256.0"
+                    android:startY="122.0"
+                    android:type="linear">
+                    <item
+                        android:color="#FF803521"
+                        android:offset="0.0" />
+                    <item
+                        android:color="#FFAF573E"
+                        android:offset="1.0" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <path
+            android:fillColor="#7C3320"
+            android:pathData="M256,120 A134,134 0 1 1 256,388 A134,134 0 1 1 256,120 Z" />
+
+        <path android:pathData="M256,120 A132,132 0 1 1 256,384 A132,132 0 1 1 256,120 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:endX="308.8"
+                    android:endY="344.4"
+                    android:startX="203.2"
+                    android:startY="159.6"
+                    android:type="linear">
+                    <item
+                        android:color="#FF954530"
+                        android:offset="0.0" />
+                    <item
+                        android:color="#FF9E4D36"
+                        android:offset="0.6" />
+                    <item
+                        android:color="#FFA5543D"
+                        android:offset="1.0" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M256,124 A128,128 0 1 1 256,380 A128,128 0 1 1 256,124 Z"
+            android:strokeAlpha="0.35"
+            android:strokeColor="#8C412C"
+            android:strokeWidth="3" />
+
+        <!-- ================= 3. قطب البطارية الطباشيري ================= -->
+        <path
+            android:fillColor="#996D1F"
+            android:pathData="M238,146 H274 A14,14 0 0 1 288,160 V162 A14,14 0 0 1 274,176 H238 A14,14 0 0 1 224,162 V160 A14,14 0 0 1 238,146 Z" />
+
+        <path android:pathData="M238,142 H274 A14,14 0 0 1 288,156 V158 A14,14 0 0 1 274,172 H238 A14,14 0 0 1 224,158 V156 A14,14 0 0 1 238,142 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:endX="256.0"
+                    android:endY="172.0"
+                    android:startX="256.0"
+                    android:startY="142.0"
+                    android:type="linear">
+                    <item
+                        android:color="#FFE2B14A"
+                        android:offset="0.0" />
+                    <item
+                        android:color="#FFC69333"
+                        android:offset="1.0" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- ================= 4. جسم البطارية ================= -->
+        <!-- قاعدة داكنة ناعمة بدون سواد حالك -->
+        <path
+            android:fillColor="#283340"
+            android:pathData="M221,174 H291 A38,38 0 0 1 329,212 V290 A38,38 0 0 1 291,328 H221 A38,38 0 0 1 183,290 V212 A38,38 0 0 1 221,174 Z" />
+
+        <!-- سطح البطارية المطفأ -->
+        <path android:pathData="M221,166 H291 A38,38 0 0 1 329,204 V282 A38,38 0 0 1 291,320 H221 A38,38 0 0 1 183,282 V204 A38,38 0 0 1 221,166 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:endX="292.5"
+                    android:endY="304.6"
+                    android:startX="219.5"
+                    android:startY="181.4"
+                    android:type="linear">
+                    <item
+                        android:color="#FF475769"
+                        android:offset="0.0" />
+                    <item
+                        android:color="#FF3F4D5D"
+                        android:offset="0.5" />
+                    <item
+                        android:color="#FF364351"
+                        android:offset="1.0" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- حافة علوية جافة وخفيفة بدلاً من اللمعة البلاستيكية -->
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M 190 200 C 190 178, 204 168, 226 168 L 286 168 C 308 168, 322 178, 322 200"
+            android:strokeAlpha="0.2"
+            android:strokeColor="#687A8E"
+            android:strokeLineCap="round"
+            android:strokeWidth="2" />
+
+        <!-- ================= 5. صاعقة البرق ================= -->
+        <!-- ظل ساقط شفاف وخافت جداً -->
+        <path
+            android:fillAlpha="0.4"
+            android:fillColor="#242E3B"
+            android:pathData="M 276 195 L 230 259 L 255 259 L 242 319 L 294 245 L 267 245 Z" />
+
+        <!-- جسم الصاعقة الطباشيري -->
+        <path android:pathData="M 274 187 L 226 253 L 253 253 L 240 311 L 292 239 L 263 239 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:endX="278.8"
+                    android:endY="311.0"
+                    android:startX="239.2"
+                    android:startY="187.0"
+                    android:type="linear">
+                    <item
+                        android:color="#FFE8B94F"
+                        android:offset="0.0" />
+                    <item
+                        android:color="#FFCE9B36"
+                        android:offset="1.0" />
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
 </vector>

@@ -60,10 +60,22 @@ object AuraTactileColors {
     val HillGold = Color(0xFFE7B82E)
     val HillMint = Color(0xFF5BB982)
 
-    val InkDark = Color(0xFF161814)
-    val InkMuted = Color(0xFF4A4E45)
-    val CreamText = Color(0xFFFAF6EC)
+    val InkDark = Color(0xFF222222)
+    val InkMuted = Color(0xFF222222)
+    val CreamText = Color(0xFFFFFFFF)
     val StarGold = Color(0xFFE8DFC8)
+
+    /**
+     * Returns #222222 on yellow/mustard or light clay surfaces, and #FFFFFF on dark clay surfaces
+     * (navy/slate, terracotta/brick red, green, plum/purple, cocoa).
+     */
+    fun textOn(faceColor: Color): Color {
+        return if (faceColor == TileSandFace) {
+            InkDark
+        } else {
+            CreamText
+        }
+    }
 }
 
 /**
@@ -114,47 +126,49 @@ object ExpressivePalettes {
         containerColor = Color(0xFF2B4C3E),
         darkScheme = darkColorScheme(
             primary = Color(0xFFD97754),
-            onPrimary = Color(0xFFFAF6EC),
+            onPrimary = Color(0xFFFFFFFF),
             primaryContainer = Color(0xFF2B4C3E),
-            onPrimaryContainer = Color(0xFFE5DEC9),
+            onPrimaryContainer = Color(0xFFFFFFFF),
             secondary = Color(0xFFD8AC2C),
-            onSecondary = Color(0xFF161814),
+            onSecondary = Color(0xFF222222),
             secondaryContainer = Color(0xFF25352C),
-            onSecondaryContainer = Color(0xFFE5DEC9),
+            onSecondaryContainer = Color(0xFFFFFFFF),
             tertiary = Color(0xFF3D5266),
             tertiaryContainer = Color(0xFF1D3328),
             background = Color(0xFF131C18),
+            onBackground = Color(0xFF222222),
             surface = Color(0xFF18241E),
-            onSurface = Color(0xFFF5F0E4),
+            onSurface = Color(0xFF222222),
             surfaceVariant = Color(0xFF24332B),
-            onSurfaceVariant = Color(0xFFCBC4B3),
+            onSurfaceVariant = Color(0xFF222222),
             outline = Color(0xFF53665B),
             outlineVariant = Color(0xFF33443B),
             error = Color(0xFFF36A55),
             errorContainer = Color(0xFF6E2B19),
-            onErrorContainer = Color(0xFFFFDAD4)
+            onErrorContainer = Color(0xFFFFFFFF)
         ),
         lightScheme = lightColorScheme(
             primary = Color(0xFFC86441),
-            onPrimary = Color(0xFFFAF6EC),
+            onPrimary = Color(0xFFFFFFFF),
             primaryContainer = Color(0xFF2B4C3E),
-            onPrimaryContainer = Color(0xFFFAF6EC),
+            onPrimaryContainer = Color(0xFFFFFFFF),
             secondary = Color(0xFFD8AC2C),
-            onSecondary = Color(0xFF161814),
+            onSecondary = Color(0xFF222222),
             secondaryContainer = Color(0xFFE5DEC9),
-            onSecondaryContainer = Color(0xFF161814),
+            onSecondaryContainer = Color(0xFF222222),
             tertiary = Color(0xFF3D5266),
             tertiaryContainer = Color(0xFFD5E6DC),
             background = Color(0xFFF6F2E6),
+            onBackground = Color(0xFF222222),
             surface = Color(0xFFF6F2E6),
-            onSurface = Color(0xFF161814),
+            onSurface = Color(0xFF222222),
             surfaceVariant = Color(0xFFE5DEC9),
-            onSurfaceVariant = Color(0xFF3E433B),
+            onSurfaceVariant = Color(0xFF222222),
             outline = Color(0xFF8C8470),
             outlineVariant = Color(0xFFCBC2A8),
             error = Color(0xFFA84A31),
             errorContainer = Color(0xFFF9DEDC),
-            onErrorContainer = Color(0xFF410E0B)
+            onErrorContainer = Color(0xFF222222)
         )
     )
 
@@ -167,15 +181,19 @@ object ExpressivePalettes {
         containerColor = Color(0xFF2E4357),
         darkScheme = AuraEarthy.darkScheme.copy(
             primary = Color(0xFFE7B82E),
+            onPrimary = Color(0xFF222222),
             primaryContainer = Color(0xFF223344),
             secondary = Color(0xFFC86441),
+            onSecondary = Color(0xFFFFFFFF),
             background = Color(0xFF121A22),
             surface = Color(0xFF18222C)
         ),
         lightScheme = AuraEarthy.lightScheme.copy(
             primary = Color(0xFFD8AC2C),
+            onPrimary = Color(0xFF222222),
             primaryContainer = Color(0xFF2E4357),
             secondary = Color(0xFFC86441),
+            onSecondary = Color(0xFFFFFFFF),
             background = Color(0xFFF3F5F8),
             surface = Color(0xFFF3F5F8)
         )
@@ -190,15 +208,19 @@ object ExpressivePalettes {
         containerColor = Color(0xFF4E3629),
         darkScheme = AuraEarthy.darkScheme.copy(
             primary = Color(0xFFE7B82E),
+            onPrimary = Color(0xFF222222),
             primaryContainer = Color(0xFF3B281E),
             secondary = Color(0xFFC86441),
+            onSecondary = Color(0xFFFFFFFF),
             background = Color(0xFF1C1512),
             surface = Color(0xFF261D19)
         ),
         lightScheme = AuraEarthy.lightScheme.copy(
             primary = Color(0xFFB58917),
+            onPrimary = Color(0xFF222222),
             primaryContainer = Color(0xFF4E3629),
             secondary = Color(0xFFC86441),
+            onSecondary = Color(0xFFFFFFFF),
             background = Color(0xFFF8F2E8),
             surface = Color(0xFFF8F2E8)
         )
@@ -304,8 +326,8 @@ object ExpressivePalettes {
                 secondaryAccentLip = Color(0xFF873D23),
                 tertiaryAccentFace = Color(0xFF3D5266),
                 tertiaryAccentLip = Color(0xFF253442),
-                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF161B20),
-                mutedInkColor = if (isDark) Color(0xFFBCC6D0) else Color(0xFF49545E)
+                inkColor = Color(0xFF222222),
+                mutedInkColor = Color(0xFF222222)
             )
             "electriccobalt" -> AuraClayThemePalette(
                 id = "ElectricCobalt",
@@ -323,8 +345,8 @@ object ExpressivePalettes {
                 secondaryAccentLip = Color(0xFF6E2B19),
                 tertiaryAccentFace = Color(0xFF6B4C3B),
                 tertiaryAccentLip = Color(0xFF452F23),
-                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF211813),
-                mutedInkColor = if (isDark) Color(0xFFD4C4B4) else Color(0xFF5C4B40)
+                inkColor = Color(0xFF222222),
+                mutedInkColor = Color(0xFF222222)
             )
             "sunsetflame" -> AuraClayThemePalette(
                 id = "SunsetFlame",
@@ -342,8 +364,8 @@ object ExpressivePalettes {
                 secondaryAccentLip = Color(0xFF967314),
                 tertiaryAccentFace = Color(0xFF7D4B6D),
                 tertiaryAccentLip = Color(0xFF4F2C44),
-                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF241411),
-                mutedInkColor = if (isDark) Color(0xFFD9C2B8) else Color(0xFF63463F)
+                inkColor = Color(0xFF222222),
+                mutedInkColor = Color(0xFF222222)
             )
             "cyberviolet" -> AuraClayThemePalette(
                 id = "CyberViolet",
@@ -361,8 +383,8 @@ object ExpressivePalettes {
                 secondaryAccentLip = Color(0xFF967314),
                 tertiaryAccentFace = Color(0xFFC86441),
                 tertiaryAccentLip = Color(0xFF873D23),
-                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF20151E),
-                mutedInkColor = if (isDark) Color(0xFFD1C0CD) else Color(0xFF5B4757)
+                inkColor = Color(0xFF222222),
+                mutedInkColor = Color(0xFF222222)
             )
             "emeraldjade" -> AuraClayThemePalette(
                 id = "EmeraldJade",
@@ -380,8 +402,8 @@ object ExpressivePalettes {
                 secondaryAccentLip = Color(0xFF967314),
                 tertiaryAccentFace = Color(0xFF3D5266),
                 tertiaryAccentLip = Color(0xFF253442),
-                inkColor = if (isDark) Color(0xFFFAF6EC) else Color(0xFF141E20),
-                mutedInkColor = if (isDark) Color(0xFFBDD0CE) else Color(0xFF46595B)
+                inkColor = Color(0xFF222222),
+                mutedInkColor = Color(0xFF222222)
             )
             else -> AuraClayThemePalette(
                 id = "AuraEarthy",
@@ -399,8 +421,8 @@ object ExpressivePalettes {
                 secondaryAccentLip = AuraTactileColors.TileMustardLip,
                 tertiaryAccentFace = AuraTactileColors.TileSlateFace,
                 tertiaryAccentLip = AuraTactileColors.TileSlateLip,
-                inkColor = if (isDark) AuraTactileColors.CreamText else AuraTactileColors.InkDark,
-                mutedInkColor = if (isDark) AuraTactileColors.SandMedallionLight.copy(alpha = 0.78f) else AuraTactileColors.InkMuted
+                inkColor = Color(0xFF222222),
+                mutedInkColor = Color(0xFF222222)
             )
         }
     }
