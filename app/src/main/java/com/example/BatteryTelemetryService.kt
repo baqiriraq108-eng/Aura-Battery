@@ -43,7 +43,10 @@ class BatteryTelemetryService : Service() {
         const val LOW_ALERT_BODY = "Battery dropped to the minimum limit. Connect the charger now to dismiss this alert."
     }
 
-    private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val serviceExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        Log.e("BatteryTelemetryService", "Caught coroutine exception in serviceScope", throwable)
+    }
+    private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob() + serviceExceptionHandler)
     private var isMonitoring = false
 
     private lateinit var dataStore: TelemetryDataStore
@@ -56,6 +59,7 @@ class BatteryTelemetryService : Service() {
     // Active threshold alert & cycle/snooze state tracking
     private var isHighAlertActive = false
     private var isLowAlertActive = false
+    private var isForegroundLocked = false
     private var alertCycleJob: Job? = null
     private var snoozeTimerJob: Job? = null
 
@@ -282,7 +286,8 @@ class BatteryTelemetryService : Service() {
     private fun hidePersistentMonitoringNotification() {
         try {
             notificationManager.cancel(FOREGROUND_NOTIF_ID)
-            if (!isHighAlertActive && !isLowAlertActive) {
+            if (!isHighAlertActive && !isLowAlertActive && isForegroundLocked) {
+                isForegroundLocked = false
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     stopForeground(STOP_FOREGROUND_REMOVE)
                 } else {
@@ -290,7 +295,7 @@ class BatteryTelemetryService : Service() {
                     stopForeground(true)
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             // Ignore if not currently in foreground
         }
     }
@@ -308,16 +313,20 @@ class BatteryTelemetryService : Service() {
                         notification,
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
                     )
+                    isForegroundLocked = true
                 } catch (typeError: Throwable) {
                     startForeground(notificationId, notification)
+                    isForegroundLocked = true
                 }
             } else {
                 startForeground(notificationId, notification)
+                isForegroundLocked = true
             }
         } catch (t: Throwable) {
+            isForegroundLocked = false
             try {
                 notificationManager.notify(notificationId, notification)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("BatteryTelemetryService", "Failed to notify locked alert", e)
             }
         }
@@ -779,28 +788,40 @@ class BatteryTelemetryService : Service() {
                                 prepare()
                                 start()
                             }
-                        } catch (playerError: Exception) {
+                        } catch (playerError: Throwable) {
                             Log.w("BatteryTelemetryService", "Failed custom URI playback, falling back to default", playerError)
-                            val fallbackUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-                            if (fallbackUri != null) {
-                                mediaPlayer = MediaPlayer().apply {
-                                    setDataSource(applicationContext, fallbackUri)
-                                    setAudioAttributes(
-                                        AudioAttributes.Builder()
-                                            .setUsage(AudioAttributes.USAGE_ALARM)
-                                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                                            .build()
-                                    )
-                                    isLooping = true
-                                    prepare()
-                                    start()
+                            try {
+                                mediaPlayer?.release()
+                            } catch (_: Throwable) {}
+                            mediaPlayer = null
+                            try {
+                                val fallbackUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+                                if (fallbackUri != null) {
+                                    mediaPlayer = MediaPlayer().apply {
+                                        setDataSource(applicationContext, fallbackUri)
+                                        setAudioAttributes(
+                                            AudioAttributes.Builder()
+                                                .setUsage(AudioAttributes.USAGE_ALARM)
+                                                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                                                .build()
+                                        )
+                                        isLooping = true
+                                        prepare()
+                                        start()
+                                    }
                                 }
+                            } catch (fallbackError: Throwable) {
+                                Log.w("BatteryTelemetryService", "Fallback ringtone playback unavailable", fallbackError)
+                                try {
+                                    mediaPlayer?.release()
+                                } catch (_: Throwable) {}
+                                mediaPlayer = null
                             }
                         }
                     }
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("BatteryTelemetryService", "Failed to play alarm ringtone: ", e)
             }
         }
@@ -815,7 +836,7 @@ class BatteryTelemetryService : Service() {
                     }
                     it.release()
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("BatteryTelemetryService", "Failed to stop alarm ringtone: ", e)
             }
             mediaPlayer = null

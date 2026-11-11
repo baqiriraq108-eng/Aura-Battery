@@ -95,7 +95,8 @@ fun SettingsScreen(
     initialRingtoneUri: String = "",
     initialRingtoneName: String = "Default Tone",
     initialAlertDurationSeconds: Int = 60,
-    initialSnoozeDurationMinutes: Int = 5
+    initialSnoozeDurationMinutes: Int = 5,
+    initialBootAutoStartEnabled: Boolean = true
 ) {
     val context = LocalContext.current
     val clayPalette = LocalAuraClayPalette.current
@@ -125,6 +126,7 @@ fun SettingsScreen(
     val ringtoneName by telemetryDataStore.ringtoneNameFlow.collectAsState(initial = initialRingtoneName)
     val alertDurationSeconds by telemetryDataStore.alertDurationSecondsFlow.collectAsState(initial = initialAlertDurationSeconds)
     val snoozeDurationMinutes by telemetryDataStore.snoozeDurationMinutesFlow.collectAsState(initial = initialSnoozeDurationMinutes)
+    val bootAutoStartEnabled by telemetryDataStore.bootAutoStartEnabledFlow.collectAsState(initial = initialBootAutoStartEnabled)
 
     var localHighThresh by rememberSaveable(highThresh) { mutableIntStateOf(highThresh) }
     var localLowThresh by rememberSaveable(lowThresh) { mutableIntStateOf(lowThresh) }
@@ -246,6 +248,7 @@ fun SettingsScreen(
     val cardFace = clayPalette.cardFace
     val cardLip = clayPalette.cardLip
     val inkColor = clayPalette.inkColor
+    val unselectedTextColor = clayPalette.unselectedTextColor
 
     val setBackgroundTelemetry: (Boolean) -> Unit = { isEnabled ->
         coroutineScope.launch {
@@ -321,9 +324,9 @@ fun SettingsScreen(
                                     fontWeight = FontWeight.ExtraBold,
                                     fontSize = 12.sp,
                                     color = if (backgroundServiceEnabled) {
-                                        AuraTactileColors.textOn(clayPalette.primaryAccentFace)
+                                        AuraTactileColors.CreamText
                                     } else {
-                                        inkColor
+                                        unselectedTextColor
                                     }
                                 )
                             )
@@ -350,7 +353,7 @@ fun SettingsScreen(
                                     fontFamily = PlusJakartaSansFontFamily,
                                     fontWeight = FontWeight.ExtraBold,
                                     fontSize = 12.sp,
-                                    color = if (!backgroundServiceEnabled) AuraTactileColors.CreamText else inkColor
+                                    color = if (!backgroundServiceEnabled) AuraTactileColors.CreamText else unselectedTextColor
                                 )
                             )
                         }
@@ -430,9 +433,9 @@ fun SettingsScreen(
                                     faceColor = if (isSelected) clayPalette.primaryAccentFace else clayPalette.recessedTrackBg,
                                     lipColor = if (isSelected) clayPalette.primaryAccentLip else clayPalette.recessedTrackBorder,
                                     textColor = if (isSelected) {
-                                        AuraTactileColors.textOn(clayPalette.primaryAccentFace)
+                                        AuraTactileColors.CreamText
                                     } else {
-                                        inkColor
+                                        unselectedTextColor
                                     },
                                     lipDepth = if (isSelected) 4.dp else 2.5.dp,
                                     cornerRadius = 13.dp,
@@ -469,9 +472,9 @@ fun SettingsScreen(
                                 val isSelected = snoozeDurationMinutes == minutes
                                 FastClayOptionChip(
                                     text = "${minutes}m",
-                                    faceColor = if (isSelected) clayPalette.tertiaryAccentFace else clayPalette.recessedTrackBg,
-                                    lipColor = if (isSelected) clayPalette.tertiaryAccentLip else clayPalette.recessedTrackBorder,
-                                    textColor = if (isSelected) AuraTactileColors.CreamText else inkColor,
+                                    faceColor = if (isSelected) clayPalette.primaryAccentFace else clayPalette.recessedTrackBg,
+                                    lipColor = if (isSelected) clayPalette.primaryAccentLip else clayPalette.recessedTrackBorder,
+                                    textColor = if (isSelected) AuraTactileColors.CreamText else unselectedTextColor,
                                     lipDepth = if (isSelected) 4.dp else 2.5.dp,
                                     cornerRadius = 13.dp,
                                     onClick = {
@@ -609,9 +612,9 @@ fun SettingsScreen(
                             hour = localEndHour,
                             amPm = localEndAmPm,
                             isExpanded = activeTimeTarget == QuietTimeTarget.TO,
-                            accentFace = clayPalette.tertiaryAccentFace,
-                            accentLip = clayPalette.tertiaryAccentLip,
-                            accentText = AuraTactileColors.textOn(clayPalette.tertiaryAccentFace),
+                            accentFace = clayPalette.primaryAccentFace,
+                            accentLip = clayPalette.primaryAccentLip,
+                            accentText = AuraTactileColors.CreamText,
                             onPodClick = {
                                 activeTimeTarget = if (activeTimeTarget == QuietTimeTarget.TO) null else QuietTimeTarget.TO
                             },
@@ -649,9 +652,9 @@ fun SettingsScreen(
                         val isFrom = target == QuietTimeTarget.FROM
                         val selectedHour = if (isFrom) localStartHour else localEndHour
                         val selectedAmPm = if (isFrom) localStartAmPm else localEndAmPm
-                        val activeAccentFace = if (isFrom) clayPalette.primaryAccentFace else clayPalette.tertiaryAccentFace
-                        val activeAccentLip = if (isFrom) clayPalette.primaryAccentLip else clayPalette.tertiaryAccentLip
-                        val activeAccentText = AuraTactileColors.textOn(activeAccentFace)
+                        val activeAccentFace = clayPalette.primaryAccentFace
+                        val activeAccentLip = clayPalette.primaryAccentLip
+                        val activeAccentText = AuraTactileColors.CreamText
 
                         Box(
                             modifier = Modifier
@@ -832,66 +835,57 @@ fun SettingsScreen(
                         color = inkColor
                     )
 
-                    // Recessed 3D Clay Cradle for System / Light / Dark Mode Pills
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(18.dp))
-                            .background(clayPalette.recessedTrackBg)
-                            .border(1.5.dp, clayPalette.recessedTrackBorder, RoundedCornerShape(18.dp))
-                            .padding(6.dp)
+                    // System / Light / Dark Mode Pills (Unselected: #111317 + #2E333D 1px border + #A1A1AA text; Selected: Primary Accent + #FFFFFF)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            listOf("System", "Light", "Dark").forEach { option ->
-                                val isSelected = themeMode == option
-                                val btnFace = if (isSelected) clayPalette.tertiaryAccentFace else clayPalette.cardFace
-                                val btnLip = if (isSelected) clayPalette.tertiaryAccentLip else clayPalette.cardLip
-                                val txtColor = if (isSelected) AuraTactileColors.CreamText else inkColor
+                        listOf("System", "Light", "Dark").forEach { option ->
+                            val isSelected = themeMode == option
+                            val btnFace = if (isSelected) clayPalette.primaryAccentFace else clayPalette.recessedTrackBg
+                            val btnLip = if (isSelected) clayPalette.primaryAccentLip else clayPalette.recessedTrackBorder
+                            val txtColor = if (isSelected) AuraTactileColors.CreamText else unselectedTextColor
 
-                                Tactile3DPebbleCard(
-                                    faceColor = btnFace,
-                                    lipColor = btnLip,
-                                    lipDepth = if (isSelected) 4.5.dp else 3.dp,
-                                    cornerRadius = 14.dp,
-                                    contentPadding = PaddingValues(vertical = 8.dp, horizontal = 6.dp),
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            telemetryDataStore.saveThemeMode(option)
-                                        }
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Row(
-                                        modifier = Modifier.align(Alignment.Center),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        val icon = when (option) {
-                                            "Light" -> Icons.Outlined.WbSunny
-                                            "Dark" -> Icons.Outlined.DarkMode
-                                            else -> Icons.Outlined.BrightnessAuto
-                                        }
-                                        Icon(
-                                            imageVector = icon,
-                                            contentDescription = null,
-                                            tint = txtColor,
-                                            modifier = Modifier.size(14.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = option,
-                                            maxLines = 1,
-                                            style = MaterialTheme.typography.labelLarge.copy(
-                                                fontFamily = PlusJakartaSansFontFamily,
-                                                fontWeight = FontWeight.ExtraBold,
-                                                fontSize = 12.sp,
-                                                color = txtColor
-                                            )
-                                        )
+                            Tactile3DPebbleCard(
+                                faceColor = btnFace,
+                                lipColor = btnLip,
+                                lipDepth = if (isSelected) 4.5.dp else 3.dp,
+                                cornerRadius = 14.dp,
+                                contentPadding = PaddingValues(vertical = 9.dp, horizontal = 6.dp),
+                                onClick = {
+                                    coroutineScope.launch {
+                                        telemetryDataStore.saveThemeMode(option)
                                     }
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Row(
+                                    modifier = Modifier.align(Alignment.Center),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    val icon = when (option) {
+                                        "Light" -> Icons.Outlined.WbSunny
+                                        "Dark" -> Icons.Outlined.DarkMode
+                                        else -> Icons.Outlined.BrightnessAuto
+                                    }
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = null,
+                                        tint = txtColor,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = option,
+                                        maxLines = 1,
+                                        style = MaterialTheme.typography.labelLarge.copy(
+                                            fontFamily = PlusJakartaSansFontFamily,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            fontSize = 12.sp,
+                                            color = txtColor
+                                        )
+                                    )
                                 }
                             }
                         }
@@ -905,10 +899,9 @@ fun SettingsScreen(
                         ) {
                             rowPalettes.forEach { pal ->
                                 val isSelected = themePalette.equals(pal.id, ignoreCase = true)
-                                val shortLabel = pal.nameEn.substringBefore(" &").trim()
 
                                 Clay3DColorMedallion(
-                                    name = shortLabel,
+                                    name = pal.nameEn,
                                     primaryOrbColor = pal.accentColor,
                                     secondaryRingColor = pal.secondarySwatchColor,
                                     selected = isSelected,
@@ -926,7 +919,7 @@ fun SettingsScreen(
             }
         }
 
-        // 7. Permissions Card: 2 Rows (4 Items) of Pure Label-Free 3D Clay Sculptures
+        // 7. Permissions Card: Single Horizontal Row of 3 3D Clay Sculptures
         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
             Tactile3DPebbleCard(
                 faceColor = cardFace,
@@ -942,7 +935,7 @@ fun SettingsScreen(
                         color = inkColor
                     )
 
-                    // Balanced 3-Column 3D Clay System Permissions Row
+                    // Single Horizontal Row of 3 Proportional 3D Clay System Permissions
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -1016,39 +1009,74 @@ fun SettingsScreen(
                         )
 
                         Clay3DSculptedPermissionTile(
-                            sculptureType = ClayPermissionSculptureType.SHIELD_AUTOSTART_GUARD,
-                            pedestalFace = AuraTactileColors.TilePlumFace,
-                            pedestalLip = AuraTactileColors.TilePlumLip,
-                            sculptureMainFace = AuraTactileColors.TileMustardFace,
-                            sculptureMainLip = AuraTactileColors.TileMustardLip,
-                            sculptureAccentFace = AuraTactileColors.TileRustFace,
-                            contentDescription = "Autostart",
+                            sculptureType = ClayPermissionSculptureType.SYSTEM_BOOT_IGNITION,
+                            pedestalFace = AuraTactileColors.TileHealthGreenFace,
+                            pedestalLip = AuraTactileColors.TileHealthGreenLip,
+                            sculptureMainFace = AuraTactileColors.TileSlateFace,
+                            sculptureMainLip = AuraTactileColors.TileSlateLip,
+                            sculptureAccentFace = if (bootAutoStartEnabled) {
+                                AuraTactileColors.CreamText
+                            } else {
+                                AuraTactileColors.TileMustardFace
+                            },
+                            contentDescription = "Auto-Start on System Boot",
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                var launched = false
-                                val miuiIntents = listOf(
-                                    Intent().setClassName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"),
-                                    Intent().setClassName("com.miui.securitycenter", "com.miui.powercenter.PowerSettings"),
-                                    Intent().setClassName("com.miui.securitycenter", "com.miui.securityscan.MainActivity")
-                                )
-                                for (miuiIntent in miuiIntents) {
-                                    try {
-                                        miuiIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        context.startActivity(miuiIntent)
-                                        launched = true
-                                        break
-                                    } catch (e: Exception) {
-                                        // continue
+                                val nextBootEnabled = !bootAutoStartEnabled
+                                coroutineScope.launch {
+                                    telemetryDataStore.saveBootAutoStartEnabled(nextBootEnabled)
+                                    if (nextBootEnabled) {
+                                        telemetryDataStore.saveBackgroundServiceEnabled(true)
                                     }
                                 }
-                                if (!launched) {
+                                try {
+                                    val receiverComponent = android.content.ComponentName(
+                                        context,
+                                        BootReceiver::class.java
+                                    )
+                                    val componentState = if (nextBootEnabled) {
+                                        android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                                    } else {
+                                        android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                                    }
+                                    context.packageManager.setComponentEnabledSetting(
+                                        receiverComponent,
+                                        componentState,
+                                        android.content.pm.PackageManager.DONT_KILL_APP
+                                    )
+                                } catch (e: Exception) {
+                                    Log.e("SettingsScreen", "Failed to update BootReceiver component state", e)
+                                }
+
+                                var launchedBootSettings = false
+                                val bootAutoStartIntents = listOf(
+                                    Intent().setClassName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"),
+                                    Intent().setClassName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity"),
+                                    Intent().setClassName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity"),
+                                    Intent().setClassName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity"),
+                                    Intent().setClassName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"),
+                                    Intent().setClassName("com.huawei.systemmanager", "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity"),
+                                    Intent().setClassName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity"),
+                                    Intent().setClassName("com.asus.mobilemanager", "com.asus.mobilemanager.autostart.AutoStartActivity")
+                                )
+                                for (bootIntent in bootAutoStartIntents) {
+                                    try {
+                                        bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        context.startActivity(bootIntent)
+                                        launchedBootSettings = true
+                                        break
+                                    } catch (ignored: Exception) {
+                                        // Try next OEM boot auto-start manager
+                                    }
+                                }
+                                if (!launchedBootSettings) {
                                     try {
                                         val fallbackIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                                             data = Uri.fromParts("package", context.packageName, null)
                                         }
                                         context.startActivity(fallbackIntent)
                                     } catch (e: Exception) {
-                                        Log.e("SettingsScreen", "Failed to open autostart fallback settings", e)
+                                        Log.e("SettingsScreen", "Failed to open boot startup settings", e)
                                     }
                                 }
                             }
@@ -1075,8 +1103,14 @@ private fun FastClayOptionChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val clayPalette = LocalAuraClayPalette.current
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
+    val borderColor = when (faceColor) {
+        clayPalette.recessedTrackBg -> clayPalette.recessedTrackBorder
+        clayPalette.cardFace -> clayPalette.cardBorder
+        else -> Color.White.copy(alpha = 0.22f)
+    }
 
     Box(
         modifier = modifier
@@ -1104,7 +1138,7 @@ private fun FastClayOptionChip(
                     cornerRadius = cr
                 )
                 drawRoundRect(
-                    color = Color.White.copy(alpha = 0.22f),
+                    color = borderColor,
                     topLeft = Offset.Zero,
                     size = Size(size.width, size.height),
                     cornerRadius = cr,
@@ -1188,9 +1222,9 @@ private fun ClayQuietTimePod(
             // 2. Interactive 3D Clay Time Display Pill (Tapping Opens/Closes the Time Selection Options)
             FastClayOptionChip(
                 text = "$hour:00",
-                faceColor = if (isExpanded) accentFace else clayPalette.cardFace,
-                lipColor = if (isExpanded) accentLip else clayPalette.cardLip,
-                textColor = if (isExpanded) accentText else clayPalette.inkColor,
+                faceColor = if (isExpanded) accentFace else clayPalette.recessedTrackBg,
+                lipColor = if (isExpanded) accentLip else clayPalette.recessedTrackBorder,
+                textColor = if (isExpanded) accentText else clayPalette.unselectedInkColor,
                 lipDepth = 4.dp,
                 cornerRadius = 14.dp,
                 onClick = onPodClick,
@@ -1208,9 +1242,9 @@ private fun ClayQuietTimePod(
                     val isSelected = amPm.equals(period, ignoreCase = true)
                     FastClayOptionChip(
                         text = period,
-                        faceColor = if (isSelected) accentFace else clayPalette.cardFace,
-                        lipColor = if (isSelected) accentLip else clayPalette.cardLip,
-                        textColor = if (isSelected) accentText else clayPalette.inkColor,
+                        faceColor = if (isSelected) accentFace else clayPalette.recessedTrackBg,
+                        lipColor = if (isSelected) accentLip else clayPalette.recessedTrackBorder,
+                        textColor = if (isSelected) accentText else clayPalette.unselectedTextColor,
                         lipDepth = 3.dp,
                         cornerRadius = 12.dp,
                         onClick = { onAmPmSelect(period) },
@@ -1297,7 +1331,7 @@ private fun ClayTimeSelectionOptionsTray(
                             text = "$hr:00",
                             faceColor = if (isSelected) accentFace else clayPalette.cardFace,
                             lipColor = if (isSelected) accentLip else clayPalette.cardLip,
-                            textColor = if (isSelected) accentText else clayPalette.inkColor,
+                            textColor = if (isSelected) accentText else clayPalette.unselectedTextColor,
                             lipDepth = 3.dp,
                             cornerRadius = 13.dp,
                             onClick = { onSelectHour(hr) },
@@ -1320,7 +1354,7 @@ private fun ClayTimeSelectionOptionsTray(
                         text = period,
                         faceColor = if (isSelected) accentFace else clayPalette.cardFace,
                         lipColor = if (isSelected) accentLip else clayPalette.cardLip,
-                        textColor = if (isSelected) accentText else clayPalette.inkColor,
+                        textColor = if (isSelected) accentText else clayPalette.unselectedTextColor,
                         lipDepth = 3.dp,
                         cornerRadius = 13.dp,
                         onClick = { onSelectAmPm(period) },
@@ -1351,7 +1385,7 @@ private fun ClayIndicatorToggleTile(
     val clayPalette = LocalAuraClayPalette.current
     val faceColor = if (active) activeFaceColor else clayPalette.recessedTrackBg
     val lipColor = if (active) activeLipColor else clayPalette.recessedTrackBorder
-    val txtColor = if (active) activeTextColor else clayPalette.inkColor
+    val txtColor = if (active) activeTextColor else clayPalette.unselectedTextColor
 
     Tactile3DPebbleCard(
         faceColor = faceColor,

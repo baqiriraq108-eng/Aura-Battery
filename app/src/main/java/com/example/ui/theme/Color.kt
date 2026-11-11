@@ -18,14 +18,14 @@ object AuraTactileColors {
     val ForestHeaderDark = Color(0xFF1B3328)
 
     val ParchmentBgLight = Color(0xFFF6F2E6)
-    val ParchmentBgDark = Color(0xFF131C18)
+    val ParchmentBgDark = Color(0xFF111915)
 
     val SandMedallionLight = Color(0xFFE5DEC9)
     val SandMedallionLipLight = Color(0xFFCBC2A8)
-    val SandMedallionDark = Color(0xFF25322C)
-    val SandMedallionLipDark = Color(0xFF161F1B)
+    val SandMedallionDark = Color(0xFF293A32)
+    val SandMedallionLipDark = Color(0xFF192520)
 
-    // Diversified 3D Clay Metric Tiles (Synchronized between Dashboard & Settings)
+    // Diversified 3D Clay Metric Tiles (Synchronized between Dashboard & Settings — Untouched)
     val TileSlateFace = Color(0xFF3D5266)
     val TileSlateLip = Color(0xFF253442)
 
@@ -65,9 +65,13 @@ object AuraTactileColors {
     val CreamText = Color(0xFFFFFFFF)
     val StarGold = Color(0xFFE8DFC8)
 
+    // High-contrast medium-light gray for unselected options in Dark Mode, warm medium gray in Light Mode
+    val UnselectedOptionGrayDark = Color(0xFFA6B0AC)
+    val UnselectedOptionGrayLight = Color(0xFF5C564E)
+    val DarkUnselectedText = UnselectedOptionGrayDark
+
     /**
-     * Returns #222222 on yellow/mustard or light clay surfaces, and #FFFFFF on dark clay surfaces
-     * (navy/slate, terracotta/brick red, green, plum/purple, cocoa).
+     * Returns #222222 on light sand surfaces, and #FFFFFF on all active/colored clay surfaces.
      */
     fun textOn(faceColor: Color): Color {
         return if (faceColor == TileSandFace) {
@@ -99,7 +103,11 @@ data class AuraClayThemePalette(
     val tertiaryAccentFace: Color,
     val tertiaryAccentLip: Color,
     val inkColor: Color,
-    val mutedInkColor: Color
+    val mutedInkColor: Color,
+    val unselectedInkColor: Color = AuraTactileColors.UnselectedOptionGrayDark,
+    val unselectedTextColor: Color = unselectedInkColor,
+    val sliderTrackBg: Color = recessedTrackBg,
+    val cardBorder: Color = recessedTrackBorder.copy(alpha = 0.75f)
 )
 
 val LocalAuraClayPalette = staticCompositionLocalOf {
@@ -130,19 +138,19 @@ object ExpressivePalettes {
             primaryContainer = Color(0xFF2B4C3E),
             onPrimaryContainer = Color(0xFFFFFFFF),
             secondary = Color(0xFFD8AC2C),
-            onSecondary = Color(0xFF222222),
-            secondaryContainer = Color(0xFF25352C),
+            onSecondary = Color(0xFFFFFFFF),
+            secondaryContainer = Color(0xFF293A32),
             onSecondaryContainer = Color(0xFFFFFFFF),
             tertiary = Color(0xFF3D5266),
             tertiaryContainer = Color(0xFF1D3328),
-            background = Color(0xFF131C18),
-            onBackground = Color(0xFF222222),
-            surface = Color(0xFF18241E),
-            onSurface = Color(0xFF222222),
-            surfaceVariant = Color(0xFF24332B),
-            onSurfaceVariant = Color(0xFF222222),
-            outline = Color(0xFF53665B),
-            outlineVariant = Color(0xFF33443B),
+            background = Color(0xFF111915),
+            onBackground = Color(0xFFFFFFFF),
+            surface = Color(0xFF293A32),
+            onSurface = Color(0xFFFFFFFF),
+            surfaceVariant = Color(0xFF1C2923),
+            onSurfaceVariant = Color(0xFFA6B0AC),
+            outline = Color(0xFF566E60),
+            outlineVariant = Color(0xFF43594C),
             error = Color(0xFFF36A55),
             errorContainer = Color(0xFF6E2B19),
             onErrorContainer = Color(0xFFFFFFFF)
@@ -153,7 +161,7 @@ object ExpressivePalettes {
             primaryContainer = Color(0xFF2B4C3E),
             onPrimaryContainer = Color(0xFFFFFFFF),
             secondary = Color(0xFFD8AC2C),
-            onSecondary = Color(0xFF222222),
+            onSecondary = Color(0xFFFFFFFF),
             secondaryContainer = Color(0xFFE5DEC9),
             onSecondaryContainer = Color(0xFF222222),
             tertiary = Color(0xFF3D5266),
@@ -163,7 +171,7 @@ object ExpressivePalettes {
             surface = Color(0xFFF6F2E6),
             onSurface = Color(0xFF222222),
             surfaceVariant = Color(0xFFE5DEC9),
-            onSurfaceVariant = Color(0xFF222222),
+            onSurfaceVariant = Color(0xFF5C564E),
             outline = Color(0xFF8C8470),
             outlineVariant = Color(0xFFCBC2A8),
             error = Color(0xFFA84A31),
@@ -181,16 +189,16 @@ object ExpressivePalettes {
         containerColor = Color(0xFF2E4357),
         darkScheme = AuraEarthy.darkScheme.copy(
             primary = Color(0xFFE7B82E),
-            onPrimary = Color(0xFF222222),
+            onPrimary = Color(0xFFFFFFFF),
             primaryContainer = Color(0xFF223344),
             secondary = Color(0xFFC86441),
             onSecondary = Color(0xFFFFFFFF),
-            background = Color(0xFF121A22),
-            surface = Color(0xFF18222C)
+            background = Color(0xFF10171F),
+            surface = Color(0xFF263747)
         ),
         lightScheme = AuraEarthy.lightScheme.copy(
             primary = Color(0xFFD8AC2C),
-            onPrimary = Color(0xFF222222),
+            onPrimary = Color(0xFFFFFFFF),
             primaryContainer = Color(0xFF2E4357),
             secondary = Color(0xFFC86441),
             onSecondary = Color(0xFFFFFFFF),
@@ -208,16 +216,16 @@ object ExpressivePalettes {
         containerColor = Color(0xFF4E3629),
         darkScheme = AuraEarthy.darkScheme.copy(
             primary = Color(0xFFE7B82E),
-            onPrimary = Color(0xFF222222),
+            onPrimary = Color(0xFFFFFFFF),
             primaryContainer = Color(0xFF3B281E),
             secondary = Color(0xFFC86441),
             onSecondary = Color(0xFFFFFFFF),
-            background = Color(0xFF1C1512),
-            surface = Color(0xFF261D19)
+            background = Color(0xFF17110E),
+            surface = Color(0xFF362922)
         ),
         lightScheme = AuraEarthy.lightScheme.copy(
             primary = Color(0xFFB58917),
-            onPrimary = Color(0xFF222222),
+            onPrimary = Color(0xFFFFFFFF),
             primaryContainer = Color(0xFF4E3629),
             secondary = Color(0xFFC86441),
             onSecondary = Color(0xFFFFFFFF),
@@ -237,8 +245,8 @@ object ExpressivePalettes {
             primary = Color(0xFFF36A55),
             primaryContainer = Color(0xFF4A2018),
             secondary = Color(0xFFE7B82E),
-            background = Color(0xFF1E1311),
-            surface = Color(0xFF281A17)
+            background = Color(0xFF19100E),
+            surface = Color(0xFF382420)
         ),
         lightScheme = AuraEarthy.lightScheme.copy(
             primary = Color(0xFFA84A31),
@@ -260,8 +268,8 @@ object ExpressivePalettes {
             primary = Color(0xFFB85D9C),
             primaryContainer = Color(0xFF361E30),
             secondary = Color(0xFFD8AC2C),
-            background = Color(0xFF1A1318),
-            surface = Color(0xFF241B22)
+            background = Color(0xFF150F14),
+            surface = Color(0xFF332531)
         ),
         lightScheme = AuraEarthy.lightScheme.copy(
             primary = Color(0xFF9E4784),
@@ -272,7 +280,7 @@ object ExpressivePalettes {
         )
     )
 
-    // 5.Nordicfjord & Copper (Deep Teal-Slate Header + Copper Clay)
+    // 5. Nordic Fjord & Copper / Flora (Deep Teal-Slate Header + Copper Clay)
     val EmeraldJade = ExpressivePaletteInfo(
         id = "EmeraldJade",
         nameEn = "Fjord & Copper",
@@ -283,8 +291,8 @@ object ExpressivePalettes {
             primary = Color(0xFFD98757),
             primaryContainer = Color(0xFF193336),
             secondary = Color(0xFFD8AC2C),
-            background = Color(0xFF111B1D),
-            surface = Color(0xFF182528)
+            background = Color(0xFF0F181A),
+            surface = Color(0xFF24373B)
         ),
         lightScheme = AuraEarthy.lightScheme.copy(
             primary = Color(0xFFC97848),
@@ -309,101 +317,114 @@ object ExpressivePalettes {
     }
 
     fun getClayPalette(id: String, isDark: Boolean): AuraClayThemePalette {
+        val activeInk = if (isDark) Color(0xFFFFFFFF) else Color(0xFF222222)
+        val activeMutedInk = if (isDark) Color(0xFFFFFFFF) else Color(0xFF222222)
+        val inactiveOptionInk = if (isDark) {
+            AuraTactileColors.UnselectedOptionGrayDark
+        } else {
+            AuraTactileColors.UnselectedOptionGrayLight
+        }
+
         return when (id.lowercase()) {
             "hyperlime" -> AuraClayThemePalette(
                 id = "HyperLime",
                 nameEn = "Slate & Amber",
-                headerWaveFace = if (isDark) Color(0xFF1F3040) else Color(0xFF2E4357),
-                headerWaveLip = if (isDark) Color(0xFF121D28) else Color(0xFF1B2B38),
-                screenBackground = if (isDark) Color(0xFF121A22) else Color(0xFFF2F4F7),
-                cardFace = if (isDark) Color(0xFF21303E) else Color(0xFFE1E6EC),
-                cardLip = if (isDark) Color(0xFF141E28) else Color(0xFFBCC5D0),
-                recessedTrackBg = if (isDark) Color(0xFF16212B) else Color(0xFFD0D8E2),
-                recessedTrackBorder = if (isDark) Color(0xFF33475B) else Color(0xFFB3Becc),
+                headerWaveFace = if (isDark) Color(0xFF223446) else Color(0xFF2E4357),
+                headerWaveLip = if (isDark) Color(0xFF13202B) else Color(0xFF1B2B38),
+                screenBackground = if (isDark) Color(0xFF10171F) else Color(0xFFF2F4F7),
+                cardFace = if (isDark) Color(0xFF263747) else Color(0xFFE1E6EC),
+                cardLip = if (isDark) Color(0xFF16222E) else Color(0xFFBCC5D0),
+                recessedTrackBg = if (isDark) Color(0xFF192633) else Color(0xFFD0D8E2),
+                recessedTrackBorder = if (isDark) Color(0xFF455D75) else Color(0xFFB3BECC),
                 primaryAccentFace = Color(0xFFD8AC2C),
                 primaryAccentLip = Color(0xFF967314),
                 secondaryAccentFace = Color(0xFFC86441),
                 secondaryAccentLip = Color(0xFF873D23),
                 tertiaryAccentFace = Color(0xFF3D5266),
                 tertiaryAccentLip = Color(0xFF253442),
-                inkColor = Color(0xFF222222),
-                mutedInkColor = Color(0xFF222222)
+                inkColor = activeInk,
+                mutedInkColor = activeMutedInk,
+                unselectedInkColor = inactiveOptionInk
             )
             "electriccobalt" -> AuraClayThemePalette(
                 id = "ElectricCobalt",
                 nameEn = "Ochre & Cocoa",
-                headerWaveFace = if (isDark) Color(0xFF38261D) else Color(0xFF4E3629),
-                headerWaveLip = if (isDark) Color(0xFF221610) else Color(0xFF332118),
-                screenBackground = if (isDark) Color(0xFF1A1411) else Color(0xFFF8F1E7),
-                cardFace = if (isDark) Color(0xFF2E231E) else Color(0xFFE9DFCF),
-                cardLip = if (isDark) Color(0xFF1C1511) else Color(0xFFC9B9A3),
-                recessedTrackBg = if (isDark) Color(0xFF211814) else Color(0xFFD9CBB6),
-                recessedTrackBorder = if (isDark) Color(0xFF4A382F) else Color(0xFFBFB099),
+                headerWaveFace = if (isDark) Color(0xFF3D2A20) else Color(0xFF4E3629),
+                headerWaveLip = if (isDark) Color(0xFF241812) else Color(0xFF332118),
+                screenBackground = if (isDark) Color(0xFF17110E) else Color(0xFFF8F1E7),
+                cardFace = if (isDark) Color(0xFF362922) else Color(0xFFE9DFCF),
+                cardLip = if (isDark) Color(0xFF211814) else Color(0xFFC9B9A3),
+                recessedTrackBg = if (isDark) Color(0xFF241B16) else Color(0xFFD9CBB6),
+                recessedTrackBorder = if (isDark) Color(0xFF5E483C) else Color(0xFFBFB099),
                 primaryAccentFace = Color(0xFFD8AC2C),
                 primaryAccentLip = Color(0xFF967314),
                 secondaryAccentFace = Color(0xFFA84A31),
                 secondaryAccentLip = Color(0xFF6E2B19),
                 tertiaryAccentFace = Color(0xFF6B4C3B),
                 tertiaryAccentLip = Color(0xFF452F23),
-                inkColor = Color(0xFF222222),
-                mutedInkColor = Color(0xFF222222)
+                inkColor = activeInk,
+                mutedInkColor = activeMutedInk,
+                unselectedInkColor = inactiveOptionInk
             )
             "sunsetflame" -> AuraClayThemePalette(
                 id = "SunsetFlame",
                 nameEn = "Canyon Coral",
-                headerWaveFace = if (isDark) Color(0xFF4A2018) else Color(0xFF6B2F23),
-                headerWaveLip = if (isDark) Color(0xFF2B110C) else Color(0xFF471C13),
-                screenBackground = if (isDark) Color(0xFF1C1210) else Color(0xFFFAF0EB),
-                cardFace = if (isDark) Color(0xFF30201C) else Color(0xFFEEDCD4),
-                cardLip = if (isDark) Color(0xFF1E1310) else Color(0xFFCDB4A8),
-                recessedTrackBg = if (isDark) Color(0xFF241613) else Color(0xFFE0C8BE),
-                recessedTrackBorder = if (isDark) Color(0xFF52342D) else Color(0xFFC4A89C),
+                headerWaveFace = if (isDark) Color(0xFF4F231A) else Color(0xFF6B2F23),
+                headerWaveLip = if (isDark) Color(0xFF2E130D) else Color(0xFF471C13),
+                screenBackground = if (isDark) Color(0xFF19100E) else Color(0xFFFAF0EB),
+                cardFace = if (isDark) Color(0xFF382420) else Color(0xFFEEDCD4),
+                cardLip = if (isDark) Color(0xFF221512) else Color(0xFFCDB4A8),
+                recessedTrackBg = if (isDark) Color(0xFF271815) else Color(0xFFE0C8BE),
+                recessedTrackBorder = if (isDark) Color(0xFF66423A) else Color(0xFFC4A89C),
                 primaryAccentFace = Color(0xFFF06752),
                 primaryAccentLip = Color(0xFF9E3828),
                 secondaryAccentFace = Color(0xFFD8AC2C),
                 secondaryAccentLip = Color(0xFF967314),
                 tertiaryAccentFace = Color(0xFF7D4B6D),
                 tertiaryAccentLip = Color(0xFF4F2C44),
-                inkColor = Color(0xFF222222),
-                mutedInkColor = Color(0xFF222222)
+                inkColor = activeInk,
+                mutedInkColor = activeMutedInk,
+                unselectedInkColor = inactiveOptionInk
             )
             "cyberviolet" -> AuraClayThemePalette(
                 id = "CyberViolet",
                 nameEn = "Plum & Velvet",
-                headerWaveFace = if (isDark) Color(0xFF341D2F) else Color(0xFF4A2A43),
-                headerWaveLip = if (isDark) Color(0xFF1F101C) else Color(0xFF30192B),
-                screenBackground = if (isDark) Color(0xFF171116) else Color(0xFFF7F0F5),
-                cardFace = if (isDark) Color(0xFF2B2029) else Color(0xFFE8DCE5),
-                cardLip = if (isDark) Color(0xFF1B1319) else Color(0xFFC6B4C1),
-                recessedTrackBg = if (isDark) Color(0xFF20171E) else Color(0xFFD8C7D3),
-                recessedTrackBorder = if (isDark) Color(0xFF493545) else Color(0xFFBCA7B6),
+                headerWaveFace = if (isDark) Color(0xFF392034) else Color(0xFF4A2A43),
+                headerWaveLip = if (isDark) Color(0xFF22111E) else Color(0xFF30192B),
+                screenBackground = if (isDark) Color(0xFF150F14) else Color(0xFFF7F0F5),
+                cardFace = if (isDark) Color(0xFF332531) else Color(0xFFE8DCE5),
+                cardLip = if (isDark) Color(0xFF1F161E) else Color(0xFFC6B4C1),
+                recessedTrackBg = if (isDark) Color(0xFF231922) else Color(0xFFD8C7D3),
+                recessedTrackBorder = if (isDark) Color(0xFF5D4459) else Color(0xFFBCA7B6),
                 primaryAccentFace = Color(0xFF9E4784),
                 primaryAccentLip = Color(0xFF662753),
                 secondaryAccentFace = Color(0xFFD8AC2C),
                 secondaryAccentLip = Color(0xFF967314),
                 tertiaryAccentFace = Color(0xFFC86441),
                 tertiaryAccentLip = Color(0xFF873D23),
-                inkColor = Color(0xFF222222),
-                mutedInkColor = Color(0xFF222222)
+                inkColor = activeInk,
+                mutedInkColor = activeMutedInk,
+                unselectedInkColor = inactiveOptionInk
             )
             "emeraldjade" -> AuraClayThemePalette(
                 id = "EmeraldJade",
                 nameEn = "Fjord & Copper",
-                headerWaveFace = if (isDark) Color(0xFF183134) else Color(0xFF23464A),
-                headerWaveLip = if (isDark) Color(0xFF0E1E20) else Color(0xFF152D30),
-                screenBackground = if (isDark) Color(0xFF111B1D) else Color(0xFFF1F5F4),
-                cardFace = if (isDark) Color(0xFF1F3033) else Color(0xFFDCE5E4),
-                cardLip = if (isDark) Color(0xFF131E20) else Color(0xFFB7C5C3),
-                recessedTrackBg = if (isDark) Color(0xFF162426) else Color(0xFFCBD7D5),
-                recessedTrackBorder = if (isDark) Color(0xFF314D52) else Color(0xFFAABAB8),
+                headerWaveFace = if (isDark) Color(0xFF1C363A) else Color(0xFF23464A),
+                headerWaveLip = if (isDark) Color(0xFF102124) else Color(0xFF152D30),
+                screenBackground = if (isDark) Color(0xFF0F181A) else Color(0xFFF1F5F4),
+                cardFace = if (isDark) Color(0xFF24373B) else Color(0xFFDCE5E4),
+                cardLip = if (isDark) Color(0xFF152225) else Color(0xFFB7C5C3),
+                recessedTrackBg = if (isDark) Color(0xFF18272A) else Color(0xFFCBD7D5),
+                recessedTrackBorder = if (isDark) Color(0xFF41646B) else Color(0xFFAABAB8),
                 primaryAccentFace = Color(0xFFC97848),
                 primaryAccentLip = Color(0xFF874B27),
                 secondaryAccentFace = Color(0xFFD8AC2C),
                 secondaryAccentLip = Color(0xFF967314),
                 tertiaryAccentFace = Color(0xFF3D5266),
                 tertiaryAccentLip = Color(0xFF253442),
-                inkColor = Color(0xFF222222),
-                mutedInkColor = Color(0xFF222222)
+                inkColor = activeInk,
+                mutedInkColor = activeMutedInk,
+                unselectedInkColor = inactiveOptionInk
             )
             else -> AuraClayThemePalette(
                 id = "AuraEarthy",
@@ -413,16 +434,17 @@ object ExpressivePalettes {
                 screenBackground = if (isDark) AuraTactileColors.ParchmentBgDark else AuraTactileColors.ParchmentBgLight,
                 cardFace = if (isDark) AuraTactileColors.SandMedallionDark else AuraTactileColors.TileSandFace,
                 cardLip = if (isDark) AuraTactileColors.SandMedallionLipDark else AuraTactileColors.TileSandLip,
-                recessedTrackBg = if (isDark) Color(0xFF16221C) else Color(0xFFD6CEB8),
-                recessedTrackBorder = if (isDark) Color(0xFF33473C) else Color(0xFFBDB39A),
+                recessedTrackBg = if (isDark) Color(0xFF1B2722) else Color(0xFFD6CEB8),
+                recessedTrackBorder = if (isDark) Color(0xFF43594C) else Color(0xFFBDB39A),
                 primaryAccentFace = AuraTactileColors.TileTerracottaFace,
                 primaryAccentLip = AuraTactileColors.TileTerracottaLip,
                 secondaryAccentFace = AuraTactileColors.TileMustardFace,
                 secondaryAccentLip = AuraTactileColors.TileMustardLip,
                 tertiaryAccentFace = AuraTactileColors.TileSlateFace,
                 tertiaryAccentLip = AuraTactileColors.TileSlateLip,
-                inkColor = Color(0xFF222222),
-                mutedInkColor = Color(0xFF222222)
+                inkColor = activeInk,
+                mutedInkColor = activeMutedInk,
+                unselectedInkColor = inactiveOptionInk
             )
         }
     }

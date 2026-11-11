@@ -246,15 +246,20 @@ class MainActivity : ComponentActivity() {
         window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(startupBgArgb))
         window.decorView.setBackgroundColor(startupBgArgb)
 
-        // Start or stop BatteryTelemetryService silently
-        lifecycleScope.launch {
+        // Start or stop BatteryTelemetryService safely only while Activity is in foreground/started state
+        val mainExceptionHandler = kotlinx.coroutines.CoroutineExceptionHandler { _, throwable ->
+            Log.e("MainActivity", "Caught coroutine exception in MainActivity", throwable)
+        }
+        lifecycleScope.launch(mainExceptionHandler) {
             telemetryDataStore.backgroundServiceEnabledFlow
                 .distinctUntilChanged()
                 .collect { isEnabled ->
                     try {
                         val serviceIntent = Intent(this@MainActivity, BatteryTelemetryService::class.java)
                         if (isEnabled) {
-                            startService(serviceIntent)
+                            if (lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.STARTED)) {
+                                startService(serviceIntent)
+                            }
                         } else {
                             stopService(serviceIntent)
                         }
@@ -395,6 +400,7 @@ fun MainNavigationRouter(
 
     val snoozeDurationMinutes by telemetryDataStore.snoozeDurationMinutesFlow.collectAsState(initial = initialSettings.snoozeDurationMinutes)
     val snoozeUntilTimestamp by telemetryDataStore.snoozeUntilTimestampFlow.collectAsState(initial = initialSettings.snoozeUntilTimestamp)
+    val bootAutoStartEnabled by telemetryDataStore.bootAutoStartEnabledFlow.collectAsState(initial = initialSettings.bootAutoStartEnabled)
 
     val quietHoursEnabled by telemetryDataStore.quietHoursEnabledFlow.collectAsState(initial = initialSettings.quietHoursEnabled)
     val quietStartHour by telemetryDataStore.quietHoursStartHourFlow.collectAsState(initial = initialSettings.quietStartHour)
@@ -456,7 +462,8 @@ fun MainNavigationRouter(
                         initialRingtoneUri = ringtoneUri,
                         initialRingtoneName = ringtoneName,
                         initialAlertDurationSeconds = alertDurationSeconds,
-                        initialSnoozeDurationMinutes = snoozeDurationMinutes
+                        initialSnoozeDurationMinutes = snoozeDurationMinutes,
+                        initialBootAutoStartEnabled = bootAutoStartEnabled
                     )
                 }
                 else -> {

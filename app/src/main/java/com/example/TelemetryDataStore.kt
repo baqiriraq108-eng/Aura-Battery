@@ -20,6 +20,7 @@ data class StartupSettingsPayload(
     val themeMode: String = "System",
     val themePalette: String = "AuraEarthy",
     val backgroundServiceEnabled: Boolean = true,
+    val autoStartOnBootEnabled: Boolean = true,
     val quietHoursEnabled: Boolean = false,
     val quietStartHour: Int = 10,
     val quietStartAmPm: String = "PM",
@@ -29,7 +30,8 @@ data class StartupSettingsPayload(
     val ringtoneName: String = "Default Tone",
     val alertDurationSeconds: Int = 60,
     val snoozeDurationMinutes: Int = 5,
-    val snoozeUntilTimestamp: Long = 0L
+    val snoozeUntilTimestamp: Long = 0L,
+    val bootAutoStartEnabled: Boolean = true
 )
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "telemetry_settings")
@@ -46,6 +48,7 @@ class TelemetryDataStore(private val context: Context) {
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val THEME_PALETTE = stringPreferencesKey("theme_palette")
         val BACKGROUND_SERVICE_ENABLED = booleanPreferencesKey("background_service_enabled")
+        val AUTO_START_ON_BOOT_ENABLED = booleanPreferencesKey("auto_start_on_boot_enabled")
         val QUIET_HOURS_ENABLED = booleanPreferencesKey("quiet_hours_enabled")
         val QUIET_HOURS_START_HOUR = intPreferencesKey("quiet_hours_start_hour")
         val QUIET_HOURS_START_AM_PM = stringPreferencesKey("quiet_hours_start_am_pm")
@@ -56,6 +59,7 @@ class TelemetryDataStore(private val context: Context) {
         val ALERT_DURATION_SECONDS = intPreferencesKey("alert_duration_seconds")
         val SNOOZE_DURATION_MINUTES = intPreferencesKey("snooze_duration_minutes")
         val SNOOZE_UNTIL_TIMESTAMP = longPreferencesKey("snooze_until_timestamp")
+        val BOOT_AUTO_START_ENABLED = booleanPreferencesKey("boot_auto_start_enabled")
     }
 
     private val safePreferencesFlow: Flow<Preferences> = context.dataStore.data
@@ -109,6 +113,10 @@ class TelemetryDataStore(private val context: Context) {
         preferences.safeGet(BACKGROUND_SERVICE_ENABLED, true)
     }
 
+    val autoStartOnBootEnabledFlow: Flow<Boolean> = safePreferencesFlow.map { preferences ->
+        preferences.safeGet(AUTO_START_ON_BOOT_ENABLED, true)
+    }
+
     val quietHoursEnabledFlow: Flow<Boolean> = safePreferencesFlow.map { preferences ->
         preferences.safeGet(QUIET_HOURS_ENABLED, false)
     }
@@ -147,6 +155,10 @@ class TelemetryDataStore(private val context: Context) {
 
     val snoozeUntilTimestampFlow: Flow<Long> = safePreferencesFlow.map { preferences ->
         preferences.safeGet(SNOOZE_UNTIL_TIMESTAMP, 0L)
+    }
+
+    val bootAutoStartEnabledFlow: Flow<Boolean> = safePreferencesFlow.map { preferences ->
+        preferences.safeGet(BOOT_AUTO_START_ENABLED, true)
     }
 
     suspend fun saveAlertDurationSeconds(seconds: Int) {
@@ -264,9 +276,24 @@ class TelemetryDataStore(private val context: Context) {
         }
     }
 
+    suspend fun saveAutoStartOnBootEnabled(value: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[AUTO_START_ON_BOOT_ENABLED] = value
+            preferences[BOOT_AUTO_START_ENABLED] = value
+        }
+    }
+
+    suspend fun saveBootAutoStartEnabled(value: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[BOOT_AUTO_START_ENABLED] = value
+            preferences[AUTO_START_ON_BOOT_ENABLED] = value
+        }
+    }
+
     suspend fun loadStartupSettings(): StartupSettingsPayload {
         return try {
             val prefs = safePreferencesFlow.first()
+            val bootEnabled = prefs.safeGet(BOOT_AUTO_START_ENABLED, prefs.safeGet(AUTO_START_ON_BOOT_ENABLED, true))
             StartupSettingsPayload(
                 highThresh = prefs.safeGet(HIGH_THRESHOLD, 80).coerceIn(50, 100),
                 lowThresh = prefs.safeGet(LOW_THRESHOLD, 20).coerceIn(5, 49),
@@ -278,6 +305,7 @@ class TelemetryDataStore(private val context: Context) {
                 themeMode = prefs.safeGet(THEME_MODE, "System"),
                 themePalette = prefs.safeGet(THEME_PALETTE, "AuraEarthy"),
                 backgroundServiceEnabled = prefs.safeGet(BACKGROUND_SERVICE_ENABLED, true),
+                autoStartOnBootEnabled = bootEnabled,
                 quietHoursEnabled = prefs.safeGet(QUIET_HOURS_ENABLED, false),
                 quietStartHour = prefs.safeGet(QUIET_HOURS_START_HOUR, 10).coerceIn(1, 12),
                 quietStartAmPm = prefs.safeGet(QUIET_HOURS_START_AM_PM, "PM"),
@@ -287,7 +315,8 @@ class TelemetryDataStore(private val context: Context) {
                 ringtoneName = prefs.safeGet(RINGTONE_NAME, "Default Tone"),
                 alertDurationSeconds = prefs.safeGet(ALERT_DURATION_SECONDS, 60),
                 snoozeDurationMinutes = prefs.safeGet(SNOOZE_DURATION_MINUTES, 5),
-                snoozeUntilTimestamp = prefs.safeGet(SNOOZE_UNTIL_TIMESTAMP, 0L)
+                snoozeUntilTimestamp = prefs.safeGet(SNOOZE_UNTIL_TIMESTAMP, 0L),
+                bootAutoStartEnabled = bootEnabled
             )
         } catch (t: Throwable) {
             StartupSettingsPayload()

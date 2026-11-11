@@ -128,29 +128,32 @@ fun StarTopNavigationBar(
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val clayPalette = LocalAuraClayPalette.current
     val navTabs = listOf(
         NavTabSpec(
             route = "dashboard",
             label = "Home",
-            activeFace = AuraTactileColors.TileTerracottaFace,
-            activeLip = AuraTactileColors.TileTerracottaLip,
+            activeFace = clayPalette.primaryAccentFace,
+            activeLip = clayPalette.primaryAccentLip,
             activeText = AuraTactileColors.CreamText
         ),
         NavTabSpec(
             route = "diagnostics",
             label = "Diagnostics",
-            activeFace = AuraTactileColors.TileSlateFace,
-            activeLip = AuraTactileColors.TileSlateLip,
+            activeFace = clayPalette.primaryAccentFace,
+            activeLip = clayPalette.primaryAccentLip,
             activeText = AuraTactileColors.CreamText
         ),
         NavTabSpec(
             route = "settings",
             label = "Settings",
-            activeFace = AuraTactileColors.TileMustardFace,
-            activeLip = AuraTactileColors.TileMustardLip,
+            activeFace = clayPalette.primaryAccentFace,
+            activeLip = clayPalette.primaryAccentLip,
             activeText = AuraTactileColors.CreamText
         )
     )
+
+    val unselectedTabText = AuraTactileColors.CreamText
 
     Row(
         modifier = modifier
@@ -168,6 +171,7 @@ fun StarTopNavigationBar(
                 activeFace = tab.activeFace,
                 activeLip = tab.activeLip,
                 activeText = tab.activeText,
+                unselectedText = unselectedTabText,
                 onClick = { onNavigate(tab.route) },
                 modifier = Modifier.testTag("nav_${tab.route}_tab")
             )
@@ -175,7 +179,7 @@ fun StarTopNavigationBar(
             if (index < navTabs.lastIndex) {
                 Spacer(modifier = Modifier.width(6.dp))
                 FourPointStarIcon(
-                    color = AuraTactileColors.StarGold.copy(alpha = 0.92f),
+                    color = unselectedTabText.copy(alpha = 0.85f),
                     modifier = Modifier.size(11.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
@@ -191,6 +195,7 @@ private fun NavBadgeItem(
     activeFace: Color,
     activeLip: Color,
     activeText: Color,
+    unselectedText: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -290,7 +295,7 @@ private fun NavBadgeItem(
                         fontFamily = PlusJakartaSansFontFamily,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 14.sp,
-                        color = AuraTactileColors.CreamText
+                        color = unselectedText
                     )
                 )
             }
@@ -849,9 +854,12 @@ fun Tactile3DPebbleCard(
     cornerRadius: Dp = 24.dp,
     tiltDegrees: Float = 0f,
     contentPadding: PaddingValues = PaddingValues(14.dp),
+    customBorderColor: Color? = null,
+    borderWidth: Dp = 1.dp,
     onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
+    val clayPalette = LocalAuraClayPalette.current
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val haptic = LocalHapticFeedback.current
@@ -866,7 +874,11 @@ fun Tactile3DPebbleCard(
     )
 
     val pressPx = currentPressOffset
-    val shape = RoundedCornerShape(cornerRadius)
+    val borderColor = customBorderColor ?: when (faceColor) {
+        clayPalette.cardFace -> clayPalette.cardBorder
+        clayPalette.recessedTrackBg -> clayPalette.recessedTrackBorder
+        else -> Color.White.copy(alpha = 0.22f)
+    }
 
     Box(
         modifier = modifier
@@ -916,11 +928,11 @@ fun Tactile3DPebbleCard(
                     cornerRadius = cr
                 )
                 drawRoundRect(
-                    color = Color.White.copy(alpha = 0.22f),
+                    color = borderColor,
                     topLeft = Offset(0f, yOff),
                     size = Size(size.width, size.height),
                     cornerRadius = cr,
-                    style = Stroke(width = 1.dp.toPx())
+                    style = Stroke(width = borderWidth.toPx())
                 )
             }
             .offset(y = pressPx)
@@ -943,9 +955,9 @@ fun Clay3DSwitch(
     val interactionSource = remember { MutableInteractionSource() }
 
     val thumbFraction = if (checked) 1f else 0f
-    val trackColor = if (checked) clayPalette.primaryAccentFace.copy(alpha = 0.30f) else clayPalette.recessedTrackBg
-    val knobFaceColor = if (checked) clayPalette.primaryAccentFace else clayPalette.tertiaryAccentFace
-    val knobLipColor = if (checked) clayPalette.primaryAccentLip else clayPalette.tertiaryAccentLip
+    val trackColor = if (checked) clayPalette.primaryAccentFace.copy(alpha = 0.35f) else clayPalette.recessedTrackBg
+    val knobFaceColor = if (checked) clayPalette.primaryAccentFace else clayPalette.sliderTrackBg
+    val knobLipColor = if (checked) clayPalette.primaryAccentLip else clayPalette.recessedTrackBorder
 
     Box(
         modifier = modifier
@@ -1224,7 +1236,7 @@ fun Tactile3DThresholdBar(
     val clayPalette = LocalAuraClayPalette.current
     val haptic = LocalHapticFeedback.current
     val inkColor = clayPalette.inkColor
-    val trackBgColor = clayPalette.recessedTrackBg
+    val trackBgColor = clayPalette.sliderTrackBg
     val trackBorderColor = clayPalette.recessedTrackBorder
 
     var trackWidthPx by remember { mutableFloatStateOf(1f) }
@@ -1437,13 +1449,15 @@ enum class ClayPermissionSculptureType {
     ALERT_BELL_CHIME,
     BATTERY_POWER_CORE,
     SHIELD_AUTOSTART_GUARD,
+    SYSTEM_BOOT_STARTUP,
+    SYSTEM_BOOT_IGNITION,
     EXPORT_DATA_TRAY
 }
 
 /**
- * Label-Free 3D Clay Sculpted Figurine Tile (arranged in a 2x2 grid at the bottom of Settings).
+ * Label-Free 3D Clay Sculpted Figurine Tile (arranged in a balanced 2x2 grid in Settings Permissions).
  * Each tile houses a custom multi-layered 3D clay figurine with extruded bevels, clay shadows,
- * and specular highlights representing its specific permission/action.
+ * and specular highlights representing its specific permission/action, preserving full uncrowded size.
  */
 @Composable
 fun Clay3DSculptedPermissionTile(
@@ -1460,19 +1474,19 @@ fun Clay3DSculptedPermissionTile(
     Tactile3DPebbleCard(
         faceColor = pedestalFace,
         lipColor = pedestalLip,
-        lipDepth = 6.5.dp,
-        cornerRadius = 24.dp,
-        contentPadding = PaddingValues(12.dp),
+        lipDepth = 5.5.dp,
+        cornerRadius = 20.dp,
+        contentPadding = PaddingValues(8.dp),
         onClick = onClick,
         modifier = modifier
-            .height(92.dp)
+            .height(84.dp)
             .testTag("clay_sculpture_${sculptureType.name.lowercase()}")
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Canvas(modifier = Modifier.size(64.dp)) {
+            Canvas(modifier = Modifier.size(52.dp)) {
                 val w = size.width
                 val h = size.height
                 val cx = w / 2f
@@ -1688,6 +1702,77 @@ fun Clay3DSculptedPermissionTile(
                         drawPath(starPath, sculptureAccentFace)
                     }
 
+                    ClayPermissionSculptureType.SYSTEM_BOOT_STARTUP,
+                    ClayPermissionSculptureType.SYSTEM_BOOT_IGNITION -> {
+                        // 1. Symmetrical 3D Circular Power Button Medallion Base
+                        val plinthR = w * 0.30f
+                        drawCircle(
+                            color = Color.Black.copy(alpha = 0.25f),
+                            radius = plinthR,
+                            center = Offset(cx, cy + 4.2.dp.toPx())
+                        )
+                        drawCircle(
+                            color = sculptureMainLip,
+                            radius = plinthR,
+                            center = Offset(cx, cy + 2.8.dp.toPx())
+                        )
+                        drawCircle(
+                            color = sculptureMainFace,
+                            radius = plinthR,
+                            center = Offset(cx, cy)
+                        )
+                        drawCircle(
+                            color = Color.White.copy(alpha = 0.18f),
+                            radius = plinthR - 0.8.dp.toPx(),
+                            center = Offset(cx, cy),
+                            style = Stroke(width = 1.2.dp.toPx())
+                        )
+
+                        // 2. Layered 3D Open Circular Power Ring (Centered with 12 o'clock Ignition Gap)
+                        val ringR = w * 0.155f
+                        val ringCy = cy + 1.5.dp.toPx()
+                        val ringStroke = 3.8.dp.toPx()
+
+                        drawArc(
+                            color = sculptureMainLip,
+                            startAngle = -52f,
+                            sweepAngle = 284f,
+                            useCenter = false,
+                            topLeft = Offset(cx - ringR, ringCy - ringR + 2.dp.toPx()),
+                            size = Size(ringR * 2f, ringR * 2f),
+                            style = Stroke(width = ringStroke, cap = StrokeCap.Round)
+                        )
+                        drawArc(
+                            color = sculptureAccentFace,
+                            startAngle = -52f,
+                            sweepAngle = 284f,
+                            useCenter = false,
+                            topLeft = Offset(cx - ringR, ringCy - ringR),
+                            size = Size(ringR * 2f, ringR * 2f),
+                            style = Stroke(width = ringStroke, cap = StrokeCap.Round)
+                        )
+
+                        // 3. Raised 3D Vertical Ignition Bar at 12 o'clock
+                        val barW = 4.dp.toPx()
+                        val barH = w * 0.19f
+                        val barLeft = cx - barW / 2f
+                        val barTop = cy - w * 0.205f
+                        val barCorner = CornerRadius(barW / 2f, barW / 2f)
+
+                        drawRoundRect(
+                            color = sculptureMainLip,
+                            topLeft = Offset(barLeft, barTop + 2.dp.toPx()),
+                            size = Size(barW, barH),
+                            cornerRadius = barCorner
+                        )
+                        drawRoundRect(
+                            color = sculptureAccentFace,
+                            topLeft = Offset(barLeft, barTop),
+                            size = Size(barW, barH),
+                            cornerRadius = barCorner
+                        )
+                    }
+
                     ClayPermissionSculptureType.EXPORT_DATA_TRAY -> {
                         // 3D Sculpted Clay Export Tray Base
                         val trayW = w * 0.56f
@@ -1749,8 +1834,9 @@ fun Clay3DSculptedPermissionTile(
 }
 
 /**
- * High-Craft 3D Clay Color Orb Medallion for the redesigned Color Palette Studio.
- * Renders a sculpted 3D clay plinth with a dual-layer 3D clay sphere and active relief ring.
+ * Tactile Claymorphic Color Palette Selector Card.
+ * Renders an extruded 3D clay card with consistent bottom depth, beveled edges, and an embedded
+ * dual-tone tactile clay preview capsule showcasing the primary accent and secondary container hues.
  */
 @Composable
 fun Clay3DColorMedallion(
@@ -1762,79 +1848,97 @@ fun Clay3DColorMedallion(
     modifier: Modifier = Modifier
 ) {
     val clayPalette = LocalAuraClayPalette.current
-    val plinthFace = if (selected) clayPalette.primaryAccentFace else clayPalette.recessedTrackBg
-    val plinthLip = if (selected) clayPalette.primaryAccentLip else clayPalette.recessedTrackBorder
-    val labelColor = if (selected) AuraTactileColors.textOn(clayPalette.primaryAccentFace) else clayPalette.inkColor
+
+    // Selected: Card takes on the respective palette's accent color with extruded bottom depth
+    // Unselected: Card matches the dark container styling of inactive theme mode toggles
+    val selectedLipColor = Color(
+        red = (primaryOrbColor.red * 0.68f).coerceIn(0f, 1f),
+        green = (primaryOrbColor.green * 0.68f).coerceIn(0f, 1f),
+        blue = (primaryOrbColor.blue * 0.68f).coerceIn(0f, 1f),
+        alpha = 1f
+    )
+    val cardFace = if (selected) primaryOrbColor else clayPalette.recessedTrackBg
+    val cardLip = if (selected) selectedLipColor else clayPalette.recessedTrackBorder
+    val lipDepth = if (selected) 5.dp else 3.5.dp
+    val cardBorder = if (selected) Color.White.copy(alpha = 0.35f) else clayPalette.recessedTrackBorder
+    val labelColor = if (selected) AuraTactileColors.CreamText else clayPalette.unselectedTextColor
 
     Tactile3DPebbleCard(
-        faceColor = plinthFace,
-        lipColor = plinthLip,
-        lipDepth = if (selected) 6.dp else 4.dp,
-        cornerRadius = 20.dp,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp),
+        faceColor = cardFace,
+        lipColor = cardLip,
+        lipDepth = lipDepth,
+        cornerRadius = 16.dp,
+        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 10.dp),
+        customBorderColor = cardBorder,
+        borderWidth = 1.2.dp,
         onClick = onClick,
         modifier = modifier
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // 3D Sculpted Dual-Clay Sphere Orb
-            Canvas(modifier = Modifier.size(40.dp)) {
+            // Tactile Dual-Tone Clay Capsule Preview (Primary Accent + Secondary Swatch)
+            Canvas(
+                modifier = Modifier.size(width = 38.dp, height = 15.dp)
+            ) {
                 val w = size.width
                 val h = size.height
-                val cx = w / 2f
-                val cy = h / 2f
-                val outerR = w * 0.44f
-                val innerR = w * 0.27f
+                val r = h / 2f
+                val cr = CornerRadius(r, r)
 
-                // Ground shadow under orb
-                drawCircle(
-                    color = Color.Black.copy(alpha = 0.24f),
-                    radius = outerR,
-                    center = Offset(cx, cy + 3.5.dp.toPx())
-                )
-                // Outer 3D clay ring (header tone)
-                drawCircle(
-                    color = secondaryRingColor,
-                    radius = outerR,
-                    center = Offset(cx, cy)
-                )
-                drawCircle(
-                    color = Color.White.copy(alpha = if (selected) 0.65f else 0.28f),
-                    radius = outerR,
-                    center = Offset(cx, cy),
-                    style = Stroke(width = if (selected) 2.2.dp.toPx() else 1.2.dp.toPx())
+                // 1. Bottom 3D clay shadow for the capsule
+                drawRoundRect(
+                    color = Color.Black.copy(alpha = if (selected) 0.30f else 0.18f),
+                    topLeft = Offset(0f, 2.dp.toPx()),
+                    size = Size(w, h),
+                    cornerRadius = cr
                 )
 
-                // Inner 3D clay dome (accent tone)
-                drawCircle(
-                    color = Color.Black.copy(alpha = 0.20f),
-                    radius = innerR,
-                    center = Offset(cx, cy + 2.dp.toPx())
-                )
-                drawCircle(
-                    color = primaryOrbColor,
-                    radius = innerR,
-                    center = Offset(cx, cy)
-                )
-
-                // Specular clay highlight bead
-                drawCircle(
-                    color = Color.White.copy(alpha = 0.55f),
-                    radius = innerR * 0.28f,
-                    center = Offset(cx - innerR * 0.30f, cy - innerR * 0.30f)
-                )
-
-                // Active center clay relief dot when selected
-                if (selected) {
-                    drawCircle(
-                        color = AuraTactileColors.CreamText,
-                        radius = 3.2.dp.toPx(),
-                        center = Offset(cx, cy)
-                    )
+                // 2. Base dual-tone capsule with left & right color fields
+                val halfW = w / 2f
+                val leftPath = Path().apply {
+                    moveTo(r, 0f)
+                    lineTo(halfW, 0f)
+                    lineTo(halfW, h)
+                    lineTo(r, h)
+                    arcTo(androidx.compose.ui.geometry.Rect(0f, 0f, h, h), 90f, 180f, false)
+                    close()
                 }
+                val rightPath = Path().apply {
+                    moveTo(halfW, 0f)
+                    lineTo(w - r, 0f)
+                    arcTo(androidx.compose.ui.geometry.Rect(w - h, 0f, w, h), -90f, 180f, false)
+                    lineTo(halfW, h)
+                    close()
+                }
+
+                drawPath(leftPath, primaryOrbColor)
+                drawPath(rightPath, secondaryRingColor)
+
+                // Center dividing groove
+                drawLine(
+                    color = Color.Black.copy(alpha = 0.25f),
+                    start = Offset(halfW, 0f),
+                    end = Offset(halfW, h),
+                    strokeWidth = 1.2.dp.toPx()
+                )
+                drawLine(
+                    color = Color.White.copy(alpha = 0.25f),
+                    start = Offset(halfW + 0.8.dp.toPx(), 0f),
+                    end = Offset(halfW + 0.8.dp.toPx(), h),
+                    strokeWidth = 0.8.dp.toPx()
+                )
+
+                // 3. Tactile top specular bevel highlight
+                drawRoundRect(
+                    color = Color.White.copy(alpha = if (selected) 0.42f else 0.22f),
+                    topLeft = Offset.Zero,
+                    size = Size(w, h),
+                    cornerRadius = cr,
+                    style = Stroke(width = 1.dp.toPx())
+                )
             }
 
             Text(

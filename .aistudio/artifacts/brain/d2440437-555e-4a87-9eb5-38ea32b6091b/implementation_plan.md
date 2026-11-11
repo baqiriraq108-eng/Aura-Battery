@@ -1,63 +1,105 @@
-# إزالة الإطار الخارجي لأيقونة التطبيق وتكبيرها بدقة عالية
+# UI Refactoring: Permissions Single Row & Claymorphic Color Palette Cards
 
-تهدف هذه الخطة إلى إزالة الإطار الفاتح/الأبيض المحيط بأيقونة التطبيق بالكامل، وجعل الخلفية البرتقالية الطينية الدافئة (`#C5684D` – `#B2573E`) تملأ كامل مساحة الأيقونة من الحافة إلى الحافة، مع تكبير التجويف الدائري ومجسم البطارية والصاعقة في المركز بأعلى دقة متجهية (`VectorDrawable`) ونقطية (`PNG`).
-
-## القرارات المعتمدة
+## User Review & Critical Decisions
 
 > [!IMPORTANT]
-> سيتم الحفاظ على كافة الألوان، التدرجات، الظلال ثلاثية الأبعاد، وتفاصيل البطارية والصاعقة كما هي تماماً دون أي تغيير في التصميم، مع الاكتفاء بإزالة الهامش الأبيض الخارجي وتكبير العناصر لملء الأيقونة بوضوح فائق.
+> The following user preferences were confirmed during clarification and guide the architectural implementation:
+> - **Palette Color Preview**: Implemented as a tactile dual-tone horizontal clay capsule embedded within the card structure, showcasing each palette's primary accent and secondary container/swatch hues organically without concentric bullseye dots.
+> - **Permissions Proportions**: Formatted into a single horizontal row of 3 balanced tiles at `84.dp` height with centered `52.dp` circular badge wells, matching the spacing and depth of the app's top-tier tactile controls.
 
 ---
 
-## 1. النظرة العامة والفكرة الأساسية
+## 1. Overview & Core Concept
 
-- **المشكلة الحالية**: وجود خلفية فاتحة (`#F6F2E6`) حول مربع الأيقونة مع تصغير الحجم إلى `0.62` جعل الأيقونة تبدو محاطة بإطار أبيض خارجي وأصغر من حجم قناع النظام.
-- **الحل المطلوب**:
-  1. تحويل طبقة الخلفية إلى التدرج البرتقالي الطيني الأصلي (`#C5684D` → `#BC6047` → `#B2573E`) مع إضاءته العلوية الخافتة ليملأ كامل مساحة الأيقونة بلا أي حواف بيضاء في جميع أشكال اللانشر (دائري، مربع حواف دائرية، قطرة، إلخ).
-  2. تكبير التجويف الدائري الغائر ومجسم البطارية وقطبها العلوي وصاعقة البرق بنسبة مثالية في المركز لتظهر بحجم كبير وبارز وواضح جداً.
-  3. الاعتماد الكامل على رسوم متجهية (`VectorDrawable` بدقة `512x512`) وصور `PNG` عالية الدقة مستخلصة مباشرة بدون أي إطار خارجي.
+This update refactors two core settings areas to enhance tactile consistency, visual balance, and ergonomic clarity:
+1. **Permissions Row Simplification**: Completely prunes the legacy purple Autostart shield tile and unifies the 3 primary permissions (*Notification Alerts*, *Battery Optimization*, and *Auto-Start on Boot*) into a single, spacious horizontal row.
+2. **Claymorphic Palette Cards**: Redesigns the 3×2 palette selection matrix from flat plinths with concentric circular dots into fully sculpted, beveled 3D tactile clay tiles with dual-tone preview capsules and state-dependent chromatic bevels matching the theme mode buttons.
 
 ---
 
-## 2. التصميم البصري وتجربة المستخدم
+## 2. User Experience & Visual Design
 
-- **الهوية اللونية المحفوظة بالكامل**:
-  - **جسم الحاوية الخلفي الكامل**: تدرج طيني مطفأ (`#C5684D` إلى `#BC6047` إلى `#B2573E`) مع شطفة إضاءة علوية ناعمة (`#DDA18F` بشفافية `20%`).
-  - **التجويف الدائري الغائر**: تدرج الحافة (`#803521` إلى `#AF573E`) والعمق الداخلي (`#954530` إلى `#A5543D`) مع الحلقة الداخلية (`#8C412C`).
-  - **مجسم البطارية والصاعقة**: القطب الأصفر الطباشيري (`#E2B14A` إلى `#C69333`)، جسم البطارية الكحلي المطفأ (`#475769` إلى `#364351`) بقاعدته ثلاثية الأبعاد (`#283340`)، وصاعقة البرق (`#E8B94F` إلى `#CE9B36`) مع ظلها الساقط.
-- **ثبات الحركة في الشاشة الرئيسية**:
-  - فصل الخلفية الطينية الكاملة عن العناصر المركزية يمنع ظهور أي إطار خارجي أبيض عند قص الأيقونة بواسطة النظام أو أثناء حركة فتح وإغلاق التطبيق.
+### 2.1 Permissions Section Layout
+- **Single Horizontal Row of 3 Tiles**:
+  - **Tile 1**: Alert Channel (`ALERT_BELL_CHIME`) on Mustard Ochre pedestal (`#D8AC2C`) with Terracotta dome.
+  - **Tile 2**: Unrestricted Battery (`BATTERY_POWER_CORE`) on Terracotta pedestal (`#C86441`) with Slate cylinder and Mustard bolt.
+  - **Tile 3**: Auto-Start on System Boot (`SYSTEM_BOOT_IGNITION`) on Emerald Sage pedestal (`#3B7A57`) with Slate core, open power ring, and vertical ignition bar.
+- **Proportions**:
+  - `height = 84.dp`, `cornerRadius = 20.dp`, `lipDepth = 5.5.dp`.
+  - Centered circular pedestal badge canvas sized at `52.dp`.
+  - Spaced evenly across `Arrangement.spacedBy(8.dp)` with `Modifier.weight(1f)` for seamless edge-to-edge alignment with the cards above and below.
+
+### 2.2 Color Palette Selector Cards
+- **3D Tactile Clay Architecture**:
+  - Implements the exact extruded lip, bottom drop shadow, and crisp 1.5.dp inner/outer rim bevels seen on the theme mode toggles (*System*, *Light*, *Dark*).
+- **Organic Dual-Tone Clay Capsule (No Center Dots)**:
+  - Replaces the concentric circular orb with a horizontal clay pill capsule (`36.dp` width × `14.dp` height, `7.dp` corner radius) divided into two harmonious tactile sections:
+    - Left half: Palette primary accent color.
+    - Right half: Palette secondary container/swatch color.
+    - Includes a subtle clay specular highlight across the top edge and an extruded 3D bottom shadow for realistic tactile depth.
+- **Selected vs. Unselected States**:
+  - **Selected**:
+    - Card face takes on the palette's primary accent face color.
+    - 3D bottom lip extrudes in the palette's darkened accent lip shade (`lipDepth = 5.dp`).
+    - Outer border uses a gentle high-contrast rim highlight (`Color.White.copy(alpha = 0.38f)`).
+    - Label text renders in crisp pure white (`#FFFFFF`) or high-contrast cream.
+  - **Unselected**:
+    - Card face strictly uses the container track background (`recessedTrackBg` or `cardFace`), matching inactive theme buttons.
+    - 3D bottom lip uses `recessedTrackBorder` / `cardLip` (`lipDepth = 3.5.dp`).
+    - Border uses the active theme's unified token (`recessedTrackBorder`, `1.5.dp`).
+    - Label text displays in legible medium-light gray (`#A6B0AC` in Dark Mode).
 
 ---
 
-## 3. القرارات التقنية والمفاضلات
+## 3. Key Product Decisions & Trade-Offs
 
-- **القرار 1: ملء كامل لوحة الـ Adaptive Icon بالخلفية البرتقالية الطينية**
-  - *الأسلوب المختار*: جعل الخلفية تمتد على كامل مساحة `512x512` دون حواف فارغة حولها.
-  - *السبب*: يضمن اختفاء الإطار الأبيض نهائياً مهما كان شكل القناع الذي يفرضه نظام أندرويد.
-- **القرار 2: تكبير التجويف الدائري والبطارية في الطبقة الأمامية**
-  - *الأسلوب المختار*: ضبط مقياس الرسم للعناصر الداخلية (التجويف الدائري + البطارية + الصاعقة) لتشغل المساحة المرئية المثالية في قلب الأيقونة مع الحفاظ على دقة الـ Vector اللانهائية.
-  - *السبب*: يمنح الأيقونة حضوراً قوياً وحجماً كبيراً مع الحفاظ على عدم قص التجويف الدائري على كافة الهواتف.
+- **Removing Shield Tile vs. Keeping in Submenu**:
+  - *Decision*: Completely remove the purple `SHIELD_AUTOSTART_GUARD` tile from the Permissions card.
+  - *Rationale*: The new 4th tile (*Auto-Start on System Boot*) directly covers system boot and manufacturer auto-start settings while toggling `BootReceiver`. Removing the redundant shield eliminates user confusion and allows the 3 essential tiles to span cleanly across a single horizontal row without crowding.
+- **Embedded Dual-Tone Capsule vs. Full-Card Color Fill When Unselected**:
+  - *Decision*: Keep unselected card background neutral/dark while embedding the dual-tone tactile capsule.
+  - *Rationale*: If all 6 unselected cards were fully filled with solid colors, the palette grid would overwhelm the visual hierarchy and destroy the unified dark container aesthetic. The dual-tone clay capsule provides an immediate, elegant color preview while keeping unselected cards calm and cohesive.
 
 ---
 
-## 4. البنية التقنية وتوزيع الطبقات
+## 4. Technical Architecture & Component Flow
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                  Adaptive Icon (108dp × 108dp)               │
-├──────────────────────────────────────────────────────────────┤
-│  طبقة الخلفية (Full-Bleed Terracotta Clay Container)         │
-│  • تملأ كامل المساحة 512×512 بدون أي هامش أو إطار أبيض        │
-│  • التدرج الأصلي (#C5684D → #BC6047 → #B2573E)               │
-│  • شطفة الإضاءة العلوية (#DDA18F @ 20% → #BC6047 @ 0%)       │
-├──────────────────────────────────────────────────────────────┤
-│  الطبقة الأمامية (High-Precision Scaled Center Emblem)        │
-│  • التجويف الدائري الغائر بكامل طبقاته وظلاله                 │
-│  • قطب البطارية الأصفر + جسم البطارية الكحلي ثلاثي الأبعاد   │
-│  • صاعقة البرق الصفراء وظلها الساقط بدقة Vector كاملة        │
-├──────────────────────────────────────────────────────────────┤
-│  أيقونات الأنظمة الكلاسيكية (Legacy Mipmap PNGs)             │
-│  • توليد نسخ عالية الوضوح لجميع الكثافات بدون أي إطار أبيض   │
-└──────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                       SettingsScreen.kt                         │
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │ Color Palette Studio Card                                 │  │
+│  │  ┌───────────────────────┐ ┌───────────────────────────┐  │  │
+│  │  │ Theme Mode Clay Chips │ │ (System / Light / Dark)   │  │  │
+│  │  └───────────────────────┘ └───────────────────────────┘  │  │
+│  │  ┌─────────────────────────────────────────────────────┐  │  │
+│  │  │ 3x2 Clay3DColorMedallion Grid                       │  │  │
+│  │  │  - Unselected: Dark card surface + Unified border   │  │  │
+│  │  │  - Selected: Palette accent fill + 3D tactile lip   │  │  │
+│  │  │  - Dual-tone clay capsule preview (primary+secondary)│  │
+│  │  └─────────────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │ Permissions Card (Single Row Layout)                      │  │
+│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐│  │
+│  │  │ Alert Channel   │  │ Battery Opt.    │  │ Auto-Start  ││  │
+│  │  │ (Bell Chime)    │  │ (Power Core)    │  │ (Ignition)  ││  │
+│  │  │ 84dp x 52dp well│  │ 84dp x 52dp well│  │ 84dp x 52dp ││  │
+│  │  └─────────────────┘  └─────────────────┘  └─────────────┘│  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
 ```
+
+### Component & Source Modifications:
+1. **`app/src/main/java/com/example/ui/Tactile3DComponents.kt`**:
+   - Update `Clay3DSculptedPermissionTile` default parameters: adjust height to `84.dp`, canvas to `52.dp`, corner radius to `20.dp`, and lip depth to `5.5.dp`.
+   - Redesign `Clay3DColorMedallion`:
+     - Remove concentric circular canvas orbs.
+     - Implement sculpted dual-tone horizontal clay capsule (`36.dp` × `14.dp`) displaying `primaryOrbColor` on the left and `secondaryRingColor` on the right with tactile bevels and top specular shine.
+     - Apply unified claymorphic card styling matching `Tactile3DPebbleCard` with selected palette accent fill vs unselected dark container surface fill.
+2. **`app/src/main/java/com/example/SettingsScreen.kt`**:
+   - Refactor Permissions card: remove `SHIELD_AUTOSTART_GUARD` tile and the 2×2 grid layout; place the 3 remaining tiles (`ALERT_BELL_CHIME`, `BATTERY_POWER_CORE`, `SYSTEM_BOOT_IGNITION`) into a single `Row` with `horizontalArrangement = Arrangement.spacedBy(8.dp)`.
+3. **Verification**:
+   - Run `compile_applet` to confirm clean compilation and zero layout regressions.
